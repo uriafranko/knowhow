@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
+import { useDebouncedCallback } from "use-debounce";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -8,6 +9,13 @@ interface SearchBarProps {
 
 const SearchBar = ({ onSearch }: SearchBarProps) => {
   const [focused, setFocused] = useState(false);
+  
+  const debouncedSearch = useDebouncedCallback(
+    (value: string) => {
+      onSearch(value);
+    },
+    300
+  );
 
   return (
     <motion.div
@@ -32,7 +40,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           placeholder="Search for courses..."
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          onChange={(e) => onSearch(e.target.value)}
+          onChange={(e) => debouncedSearch(e.target.value)}
         />
       </div>
     </motion.div>
