@@ -3,9 +3,9 @@ import PageTransition from "@/components/PageTransition";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { marked } from 'marked';
 import { useAuth } from "@/components/AuthProvider";
+import AudioLesson from "@/components/class/AudioLesson";
+import ResearchSection from "@/components/class/ResearchSection";
 
 const Class = () => {
   const { id } = useParams();
@@ -71,14 +71,6 @@ const Class = () => {
     );
   }
 
-  const parseContent = (content: string | null) => {
-    if (!content) return '';
-    // First replace escaped newlines with actual newlines
-    const unescapedContent = content.replace(/\\n/g, '\n');
-    // Then parse the markdown
-    return marked(unescapedContent);
-  };
-
   return (
     <PageTransition>
       <div className="min-h-screen bg-white">
@@ -101,56 +93,11 @@ const Class = () => {
 
         {/* Content Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-          {/* Audio Player Section */}
-          <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Audio Lesson</h2>
-            {classData.audio_url ? (
-              <audio 
-                controls 
-                className="w-full"
-                src={classData.audio_url}
-              >
-                Your browser does not support the audio element.
-              </audio>
-            ) : (
-              <div className="text-gray-500 italic">No audio available for this lesson</div>
-            )}
-            
-            {/* Transcription Section */}
-            <div>
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
-              <ScrollArea className="h-48 rounded-md border p-4 bg-white">
-                {classData.transcription ? (
-                  <div 
-                    className="prose prose-gray max-w-none"
-                    dangerouslySetInnerHTML={{ 
-                      __html: parseContent(classData.transcription)
-                    }} 
-                  />
-                ) : (
-                  <p className="text-gray-500 italic">No transcription available for this lesson</p>
-                )}
-              </ScrollArea>
-            </div>
-          </div>
-
-          {/* Research Section */}
-          <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Research</h2>
-            <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
-              <div className="prose prose-gray max-w-none">
-                {classData.research ? (
-                  <div 
-                    dangerouslySetInnerHTML={{ 
-                      __html: parseContent(classData.research)
-                    }} 
-                  />
-                ) : (
-                  <p className="text-gray-500 italic">No research content available for this lesson</p>
-                )}
-              </div>
-            </ScrollArea>
-          </div>
+          <AudioLesson 
+            audioUrl={classData.audio_url}
+            transcription={classData.transcription}
+          />
+          <ResearchSection research={classData.research} />
         </div>
       </div>
     </PageTransition>
