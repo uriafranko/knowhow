@@ -2,63 +2,70 @@ import { useParams } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2 } from "lucide-react";
+import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-
-// Mock data - in a real app, this would come from an API
-const courseData = {
-  title: "Advanced JavaScript Programming",
-  topic: "Web Development",
-  description: "Master modern JavaScript with this comprehensive course. Learn ES6+, async programming, and advanced concepts through practical examples and real-world projects.",
-  outcomes: [
-    "Understand advanced JavaScript concepts and patterns",
-    "Build modern web applications using ES6+ features",
-    "Master asynchronous programming with Promises and async/await",
-    "Implement design patterns and best practices"
-  ],
-  classes: [
-    {
-      id: "1",
-      title: "JavaScript Fundamentals Review",
-      description: "A quick refresher on core JavaScript concepts and modern syntax.",
-      duration: "45 minutes",
-      completed: true
-    },
-    {
-      id: "2",
-      title: "Advanced Functions and Closures",
-      description: "Deep dive into function mechanics and closure patterns.",
-      duration: "60 minutes",
-      completed: true
-    },
-    {
-      id: "3",
-      title: "Asynchronous Programming",
-      description: "Understanding Promises, async/await, and event loop.",
-      duration: "90 minutes",
-      completed: false
-    }
-  ]
-};
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Course = () => {
   const { id } = useParams();
 
-  // Calculate total duration and progress
-  const totalDuration = courseData.classes.reduce((total, classItem) => {
-    const minutes = parseInt(classItem.duration);
-    return total + minutes;
-  }, 0);
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ['course', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('course')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const completedClasses = courseData.classes.filter(c => c.completed).length;
-  const progressPercentage = (completedClasses / courseData.classes.length) * 100;
+  const { data: classes, isLoading: classesLoading } = useQuery({
+    queryKey: ['classes', id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('class')
+        .select('*')
+        .eq('course_id', id)
+        .order('index');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
-  };
+  const isLoading = courseLoading || classesLoading;
+
+  if (isLoading) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        </div>
+      </PageTransition>
+    );
+  }
+
+  if (!course) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Course not found</h1>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
+
+  const completedClasses = 2; // Hardcoded for now, we'll implement this later
+  const totalClasses = classes?.length || 0;
+  const progressPercentage = (completedClasses / totalClasses) * 100;
 
   return (
     <PageTransition>
@@ -66,17 +73,19 @@ const Course = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
           <div className="mb-12 text-center">
-            <Badge variant="secondary" className="mb-6">{courseData.topic}</Badge>
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{courseData.title}</h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{courseData.description}</p>
+            <Badge variant="secondary" className="mb-6">Course</Badge>
+            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{course.topic}</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{course.description}</p>
             <div className="flex justify-center gap-4">
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
                 <Clock className="h-4 w-4 text-blue-500" />
-                <span className="text-sm font-medium">Total Duration: {formatDuration(totalDuration)}</span>
+                <span className="text-sm font-medium">
+                  {totalClasses} {totalClasses === 1 ? 'class' : 'classes'}
+                </span>
               </div>
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
                 <BookOpen className="h-4 w-4 text-green-500" />
-                <span className="text-sm font-medium">{completedClasses} of {courseData.classes.length} completed</span>
+                <span className="text-sm font-medium">{completedClasses} of {totalClasses} completed</span>
               </div>
             </div>
           </div>
@@ -87,24 +96,26 @@ const Course = () => {
           </div>
 
           {/* Course Outcomes */}
-          <Card className="mb-8 border-none shadow-lg bg-white/50 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <Target className="h-6 w-6 text-blue-500" />
-                Learning Outcomes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                {courseData.outcomes.map((outcome, index) => (
-                  <li key={index} className="flex items-start gap-3 group">
-                    <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <span className="text-gray-700">{outcome}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {course.outcome && (
+            <Card className="mb-8 border-none shadow-lg bg-white/50 backdrop-blur">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <Target className="h-6 w-6 text-blue-500" />
+                  Learning Outcomes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {course.outcome.split('\n').map((outcome, index) => (
+                    <div key={index} className="flex items-start gap-3 group">
+                      <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="text-gray-700">{outcome}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Class List */}
           <Card className="border-none shadow-lg bg-white/50 backdrop-blur">
@@ -116,22 +127,22 @@ const Course = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {courseData.classes.map((classItem, index) => (
+                {classes?.map((classItem, index) => (
                   <Link
                     key={classItem.id}
                     to={`/class/${classItem.id}`}
                     className="block group"
                   >
-                    <Card className={`transition-all duration-300 hover:shadow-xl border-none ${classItem.completed ? 'bg-green-50' : 'bg-white'}`}>
+                    <Card className={`transition-all duration-300 hover:shadow-xl border-none ${index < 2 ? 'bg-green-50' : 'bg-white'}`}>
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start">
                           <div className="flex-grow">
                             <div className="flex items-center gap-3">
-                              {classItem.completed && (
+                              {index < 2 && (
                                 <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                               )}
-                              <h3 className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${classItem.completed ? 'text-green-700' : 'text-gray-900'}`}>
-                                {classItem.title}
+                              <h3 className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${index < 2 ? 'text-green-700' : 'text-gray-900'}`}>
+                                {classItem.name}
                               </h3>
                             </div>
                             <p className="text-gray-600 mb-2">{classItem.description}</p>

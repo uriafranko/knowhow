@@ -2,32 +2,23 @@ import { motion } from "framer-motion";
 import SearchBar from "@/components/SearchBar";
 import CourseCard from "@/components/CourseCard";
 import PageTransition from "@/components/PageTransition";
-
-const FEATURED_COURSES = [
-  {
-    id: "1",
-    title: "Introduction to Digital Marketing",
-    description: "Learn the fundamentals of digital marketing and grow your online presence",
-    lessons: 12,
-    duration: "6 hours"
-  },
-  {
-    id: "2",
-    title: "Web Development Fundamentals",
-    description: "Master the basics of HTML, CSS, and JavaScript",
-    lessons: 15,
-    duration: "8 hours"
-  },
-  {
-    id: "3",
-    title: "Data Science Essentials",
-    description: "Discover the power of data analysis and visualization",
-    lessons: 10,
-    duration: "5 hours"
-  }
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
+  const { data: courses, isLoading, error } = useQuery({
+    queryKey: ['courses'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('course')
+        .select('*');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -52,11 +43,29 @@ const Index = () => {
             <SearchBar />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-            {FEATURED_COURSES.map((course, index) => (
-              <CourseCard key={course.id} {...course} index={index} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center min-h-[200px]">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-500">
+              Failed to load courses. Please try again later.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+              {courses?.map((course, index) => (
+                <CourseCard
+                  key={course.id}
+                  id={course.id.toString()}
+                  title={course.topic}
+                  description={course.description || ""}
+                  lessons={0} // We'll implement this count later
+                  duration="Coming soon" // We'll implement this calculation later
+                  index={index}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </PageTransition>
