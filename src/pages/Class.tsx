@@ -71,6 +71,14 @@ const Class = () => {
     );
   }
 
+  const parseContent = (content: string | null) => {
+    if (!content) return '';
+    // First replace escaped newlines with actual newlines
+    const unescapedContent = content.replace(/\\n/g, '\n');
+    // Then parse the markdown
+    return marked(unescapedContent);
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-white">
@@ -113,10 +121,11 @@ const Class = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
               <ScrollArea className="h-48 rounded-md border p-4 bg-white">
                 {classData.transcription ? (
-                  <div className="prose prose-gray max-w-none" 
-                       dangerouslySetInnerHTML={{ 
-                         __html: marked(classData.transcription.replace(/\\n/g, '\n')) 
-                       }} 
+                  <div 
+                    className="prose prose-gray max-w-none"
+                    dangerouslySetInnerHTML={{ 
+                      __html: parseContent(classData.transcription)
+                    }} 
                   />
                 ) : (
                   <p className="text-gray-500 italic">No transcription available for this lesson</p>
@@ -133,7 +142,7 @@ const Class = () => {
                 {classData.research ? (
                   <div 
                     dangerouslySetInnerHTML={{ 
-                      __html: marked(classData.research.replace(/\\n/g, '\n')) 
+                      __html: parseContent(classData.research)
                     }} 
                   />
                 ) : (
