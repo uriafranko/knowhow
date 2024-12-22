@@ -15,7 +15,7 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
 
   return (
     <ReactMarkdown
-      className={`markdown-body ${className}`}
+      className={`markdown-body ${className} text-gray-700`}
       rehypePlugins={rehypePlugins}
       remarkPlugins={[remarkGfm]}
     >

@@ -21,7 +21,7 @@ const Index = () => {
   } = useQuery({
     queryKey: ['courses', searchQuery],
     queryFn: async () => {
-      let query = supabase.from('course').select('*').limit(10);
+      let query = supabase.from('course').select('*').limit(8).eq('is_ready', true);
 
       if (searchQuery) {
         const searchTerms = searchQuery.toLowerCase().split(' ');
@@ -88,27 +88,25 @@ const Index = () => {
                   id={course.id.toString()}
                   title={course.topic}
                   description={course.description || ''}
-                  duration="Coming soon"
+                  duration=""
                   index={index}
                 />
               ))}
-              {(!courses || courses.length === 0) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                  onClick={() => setIsGenerateModalOpen(true)}
-                  className="group relative p-6 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm ring-1 ring-purple-100 hover:shadow-md hover:from-purple-100 hover:to-indigo-100 transition-all duration-300 cursor-pointer"
-                >
-                  <div className="flex flex-col h-full items-center justify-center text-center py-8">
-                    <Sparkles className="h-12 w-12 text-purple-500 mb-4" />
-                    <h3 className="text-xl font-semibold text-purple-800 mb-2 group-hover:text-purple-900">
-                      Let me generate a class for you
-                    </h3>
-                    <p className="text-purple-600">Click here to create something magical</p>
-                  </div>
-                </motion.div>
-              )}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                onClick={() => setIsGenerateModalOpen(true)}
+                className="group relative p-6 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm ring-1 ring-purple-100 hover:shadow-md hover:from-purple-100 hover:to-indigo-100 transition-all duration-300 cursor-pointer"
+              >
+                <div className="flex flex-col h-full items-center justify-center text-center py-8">
+                  <Sparkles className="h-12 w-12 text-purple-500 mb-4" />
+                  <h3 className="text-xl font-semibold text-purple-800 mb-2 group-hover:text-purple-900">
+                    Let me generate a class for you
+                  </h3>
+                  <p className="text-purple-600">Click here to create something magical</p>
+                </div>
+              </motion.div>
             </div>
           )}
         </div>

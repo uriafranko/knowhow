@@ -19,6 +19,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
+import Markdown from '@/components/general/Markdown';
 
 const Course = () => {
   const { id } = useParams();
@@ -59,7 +60,8 @@ const Course = () => {
       const { data, error } = await supabase
         .from('class_completed')
         .select('class_id')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .eq('course_id', id);
       if (error) throw error;
       return data.map((item) => item.class_id);
     },
@@ -85,9 +87,9 @@ const Course = () => {
   const handleCompleteCourse = async () => {
     if (!user || !id) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to mark courses as complete",
-        variant: "destructive",
+        title: 'Authentication required',
+        description: 'Please sign in to mark courses as complete',
+        variant: 'destructive',
       });
       return;
     }
@@ -100,17 +102,17 @@ const Course = () => {
       if (error) throw error;
 
       queryClient.invalidateQueries({ queryKey: ['course-completion', id, user.id] });
-      
+
       toast({
-        title: "Course completed! 🎉",
-        description: "Congratulations on completing this course!",
-        className: "bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200",
+        title: 'Course completed! 🎉',
+        description: 'Congratulations on completing this course!',
+        className: 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200',
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "There was a problem marking the course as complete",
-        variant: "destructive",
+        title: 'Error',
+        description: 'There was a problem marking the course as complete',
+        variant: 'destructive',
       });
     }
   };
@@ -166,7 +168,9 @@ const Course = () => {
             <Badge variant="secondary" className="mb-6">
               Course
             </Badge>
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{course?.topic}</h1>
+            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
+              {course?.topic}
+            </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{course?.description}</p>
             <div className="flex justify-center gap-4">
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
@@ -213,12 +217,10 @@ const Course = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {course.outcome.split('\n').map((outcome, index) => (
-                    <div key={index} className="flex items-start gap-3 group">
-                      <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="text-gray-700">{outcome}</span>
-                    </div>
-                  ))}
+                  <div className="flex items-start gap-3 group">
+                    <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <Markdown className="text-gray-700 bg-white">{course.outcome}</Markdown>
+                  </div>
                 </div>
               </CardContent>
             </Card>

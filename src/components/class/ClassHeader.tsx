@@ -15,7 +15,14 @@ interface ClassHeaderProps {
   classId: number;
 }
 
-const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, classId }: ClassHeaderProps) => {
+const ClassHeader = ({
+  name,
+  description,
+  courseId,
+  courseTopic,
+  isCompleted,
+  classId,
+}: ClassHeaderProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -23,9 +30,9 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
   const handleToggleComplete = async () => {
     if (!user) {
       toast({
-        title: "Authentication required",
-        description: "Please sign in to mark classes as complete",
-        variant: "destructive",
+        title: 'Authentication required',
+        description: 'Please sign in to mark classes as complete',
+        variant: 'destructive',
       });
       return;
     }
@@ -40,26 +47,28 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
       } else {
         await supabase
           .from('class_completed')
-          .insert([{ class_id: classId, user_id: user.id }]);
+          .insert([{ class_id: classId, user_id: user.id, course_id: courseId }]);
       }
 
       // Refetch both class completion and course completion data
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['class-completion', classId, user.id] }),
         queryClient.invalidateQueries({ queryKey: ['completed-classes', courseId, user.id] }),
-        queryClient.invalidateQueries({ queryKey: ['course-completion', courseId, user.id] })
+        queryClient.invalidateQueries({ queryKey: ['course-completion', courseId, user.id] }),
       ]);
-      
+
       toast({
-        title: isCompleted ? "Class unmarked" : "Class completed!",
-        description: isCompleted ? "Progress has been updated" : "Great job on completing this class!",
-        className: "bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200",
+        title: isCompleted ? 'Class unmarked' : 'Class completed!',
+        description: isCompleted
+          ? 'Progress has been updated'
+          : 'Great job on completing this class!',
+        className: 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200',
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "There was a problem updating your progress",
-        variant: "destructive",
+        title: 'Error',
+        description: 'There was a problem updating your progress',
+        variant: 'destructive',
       });
     }
   };
@@ -77,9 +86,7 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
 
         <div className="flex justify-between items-start">
           <div className="space-y-4 max-w-3xl">
-            <h1 className="text-4xl font-bold text-slate-900">
-              {name}
-            </h1>
+            <h1 className="text-4xl font-bold text-slate-900">{name}</h1>
             <p className="text-xl text-slate-600">{description}</p>
           </div>
 
@@ -88,8 +95,8 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
               onClick={handleToggleComplete}
               variant="outline"
               className={`magic-hover ${
-                isCompleted 
-                  ? 'bg-green-50 text-green-600 hover:bg-green-100 border-green-200' 
+                isCompleted
+                  ? 'bg-green-50 text-green-600 hover:bg-green-100 border-green-200'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
               }`}
             >
