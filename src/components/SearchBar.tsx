@@ -19,7 +19,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   return (
     <motion.div
-      className="relative max-w-2xl w-full"
+      className="w-full" // Changed from max-w-2xl to w-full
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
