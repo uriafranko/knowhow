@@ -5,16 +5,28 @@ import PageTransition from '@/components/PageTransition';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 const Index = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const {
     data: courses,
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['courses'],
+    queryKey: ['courses', searchQuery],
     queryFn: async () => {
-      const { data, error } = await supabase.from('course').select('*');
+      let query = supabase
+        .from('course')
+        .select('*')
+        .limit(10);
+
+      if (searchQuery) {
+        query = query.or(`topic.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return data;
@@ -42,7 +54,7 @@ const Index = () => {
             >
               Explore our curated collection of courses designed to help you grow
             </motion.p>
-            <SearchBar />
+            <SearchBar onSearch={setSearchQuery} />
           </div>
 
           {isLoading ? (
@@ -61,11 +73,16 @@ const Index = () => {
                   id={course.id.toString()}
                   title={course.topic}
                   description={course.description || ''}
-                  lessons={0} // We'll implement this count later
-                  duration="Coming soon" // We'll implement this calculation later
+                  lessons={0}
+                  duration="Coming soon"
                   index={index}
                 />
               ))}
+              {courses?.length === 0 && (
+                <div className="col-span-full text-center text-gray-500">
+                  No courses found matching your search.
+                </div>
+              )}
             </div>
           )}
         </div>
