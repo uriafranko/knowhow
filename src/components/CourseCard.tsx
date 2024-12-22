@@ -50,23 +50,25 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="h-full"
     >
-      <Link to={`/course/${id}`}>
-        <div className="group relative p-6 rounded-2xl bg-white/80 shadow-sm ring-1 ring-black/5 hover:shadow-md hover:bg-white transition-all duration-300">
-          <div className="flex flex-col h-full">
+      <Link to={`/course/${id}`} className="block h-full">
+        <div className="group relative p-6 rounded-2xl bg-white/80 shadow-sm ring-1 ring-purple-100/20 hover:shadow-xl hover:shadow-purple-100/30 hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-1">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-50/50 via-white to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative flex flex-col h-full">
             <div className="flex justify-between items-start">
-              <div className="text-xs font-medium text-gray-500 mb-2">
+              <div className="text-xs font-medium text-purple-500 mb-2 bg-purple-50 px-3 py-1 rounded-full">
                 {classCount} {classCount === 1 ? 'class' : 'classes'} · {duration}
               </div>
               {isCompleted && (
-                <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-purple-500 flex-shrink-0" />
               )}
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-gray-700">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors duration-300">
               {title}
             </h3>
             <p className="text-gray-600 mb-4 flex-grow">{description}</p>
-            <div className="flex items-center text-sm font-medium text-gray-900">
+            <div className="flex items-center text-sm font-medium text-purple-600 group-hover:text-purple-700">
               Learn more
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </div>
