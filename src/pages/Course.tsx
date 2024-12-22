@@ -102,7 +102,9 @@ const Course = () => {
               </div>
               <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
                 <BookOpen className="h-4 w-4 text-green-500" />
-                <span className="text-sm font-medium">{completedClassesCount} of {totalClasses} completed</span>
+                <span className="text-sm font-medium">
+                  {completedClassesCount} of {totalClasses} completed
+                </span>
               </div>
             </div>
           </div>
