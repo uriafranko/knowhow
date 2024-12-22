@@ -4,11 +4,15 @@ import CourseCard from '@/components/CourseCard';
 import PageTransition from '@/components/PageTransition';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import GenerateClassModal from '@/components/GenerateClassModal';
+import { useToast } from '@/components/ui/use-toast';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const { toast } = useToast();
 
   const {
     data: courses,
@@ -23,14 +27,11 @@ const Index = () => {
         .limit(10);
 
       if (searchQuery) {
-        // Split search query into words and create a more flexible search pattern
         const searchTerms = searchQuery.toLowerCase().split(' ');
         const searchConditions = searchTerms.map(term => {
-          // Create multiple patterns for each word to catch typos and partial matches
           return `topic.ilike.%${term}%,description.ilike.%${term}%`;
         });
         
-        // Combine all search conditions with OR
         query = query.or(searchConditions.join(','));
       }
 
@@ -40,6 +41,15 @@ const Index = () => {
       return data;
     },
   });
+
+  const handleGenerateClass = async (prompt: string) => {
+    setIsGenerateModalOpen(false);
+    toast({
+      title: "✨ Magic in Progress",
+      description: "Your class is being crafted with care...",
+    });
+    // TODO: Implement class generation logic
+  };
 
   return (
     <PageTransition>
@@ -81,20 +91,38 @@ const Index = () => {
                   id={course.id.toString()}
                   title={course.topic}
                   description={course.description || ''}
-                  lessons={0}
                   duration="Coming soon"
                   index={index}
                 />
               ))}
-              {courses?.length === 0 && (
-                <div className="col-span-full text-center text-gray-500">
-                  No courses found matching your search.
-                </div>
+              {(!courses || courses.length === 0) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                  onClick={() => setIsGenerateModalOpen(true)}
+                  className="group relative p-6 rounded-2xl bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm ring-1 ring-purple-100 hover:shadow-md hover:from-purple-100 hover:to-indigo-100 transition-all duration-300 cursor-pointer"
+                >
+                  <div className="flex flex-col h-full items-center justify-center text-center py-8">
+                    <Sparkles className="h-12 w-12 text-purple-500 mb-4" />
+                    <h3 className="text-xl font-semibold text-purple-800 mb-2 group-hover:text-purple-900">
+                      Let me generate a class for you
+                    </h3>
+                    <p className="text-purple-600">
+                      Click here to create something magical
+                    </p>
+                  </div>
+                </motion.div>
               )}
             </div>
           )}
         </div>
       </div>
+      <GenerateClassModal
+        open={isGenerateModalOpen}
+        onOpenChange={setIsGenerateModalOpen}
+        onGenerate={handleGenerateClass}
+      />
     </PageTransition>
   );
 };
