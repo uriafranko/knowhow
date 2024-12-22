@@ -1,10 +1,10 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Wand2, Lock } from "lucide-react";
-import { useState } from "react";
-import { useAuth } from "@/components/AuthProvider";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Sparkles, Wand2, Lock } from 'lucide-react';
+import { useState } from 'react';
+import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 interface GenerateClassModalProps {
   open: boolean;
@@ -13,28 +13,28 @@ interface GenerateClassModalProps {
 }
 
 const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassModalProps) => {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
 
   const handleGenerate = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('queue-class-generation', {
         body: {
           prompt,
-          userId: user.id
-        }
+          userId: user.id,
+        },
       });
 
       if (error) throw error;
 
       toast({
-        title: "Request queued successfully",
-        description: "Your class will be generated shortly.",
+        title: 'Request queued successfully',
+        description: 'Your class will be generated shortly.',
       });
 
       onGenerate(prompt);
@@ -42,9 +42,9 @@ const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassMod
     } catch (error) {
       console.error('Error queueing generation:', error);
       toast({
-        title: "Error queueing generation",
-        description: "Please try again later.",
-        variant: "destructive",
+        title: 'Error queueing generation',
+        description: 'Please try again later.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -83,8 +83,8 @@ const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassMod
             disabled={!user || isLoading}
             className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
               user && !isLoading
-                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-300/40 transform hover:-translate-y-0.5" 
-                : "bg-gray-100 text-gray-500 cursor-not-allowed"
+                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-300/40 transform hover:-translate-y-0.5'
+                : 'bg-gray-100 text-gray-500 cursor-not-allowed'
             }`}
           >
             {!user ? (
