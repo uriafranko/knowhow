@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Target, ListChecks } from "lucide-react";
+import { ArrowRight, BookOpen, Target, ListChecks, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Mock data - in a real app, this would come from an API
@@ -41,31 +41,47 @@ const courseData = {
 const Course = () => {
   const { id } = useParams();
 
+  // Calculate total duration
+  const totalDuration = courseData.classes.reduce((total, classItem) => {
+    const minutes = parseInt(classItem.duration);
+    return total + minutes;
+  }, 0);
+
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header Section */}
-          <div className="mb-8">
-            <Badge className="mb-4">{courseData.topic}</Badge>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{courseData.title}</h1>
-            <p className="text-xl text-gray-600">{courseData.description}</p>
+          <div className="mb-12 text-center">
+            <Badge variant="secondary" className="mb-6">{courseData.topic}</Badge>
+            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{courseData.title}</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{courseData.description}</p>
+            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
+              <Clock className="h-4 w-4 text-blue-500" />
+              <span className="text-sm font-medium">Total Duration: {formatDuration(totalDuration)}</span>
+            </div>
           </div>
 
           {/* Course Outcomes */}
-          <Card className="mb-8">
+          <Card className="mb-8 border-none shadow-lg bg-white/50 backdrop-blur">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <Target className="h-6 w-6 text-blue-500" />
                 Learning Outcomes
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3">
+              <ul className="space-y-4">
                 {courseData.outcomes.map((outcome, index) => (
-                  <li key={index} className="flex items-start gap-2">
-                    <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0" />
-                    <span>{outcome}</span>
+                  <li key={index} className="flex items-start gap-3 group">
+                    <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="text-gray-700">{outcome}</span>
                   </li>
                 ))}
               </ul>
@@ -73,10 +89,10 @@ const Course = () => {
           </Card>
 
           {/* Class List */}
-          <Card>
+          <Card className="border-none shadow-lg bg-white/50 backdrop-blur">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-2xl">
+                <BookOpen className="h-6 w-6 text-blue-500" />
                 Course Classes
               </CardTitle>
             </CardHeader>
@@ -86,19 +102,22 @@ const Course = () => {
                   <Link
                     key={classItem.id}
                     to={`/class/${classItem.id}`}
-                    className="block"
+                    className="block group"
                   >
-                    <Card className="transition-all duration-300 hover:shadow-md hover:bg-gray-50">
+                    <Card className="transition-all duration-300 hover:shadow-xl border-none bg-white">
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                               {classItem.title}
                             </h3>
                             <p className="text-gray-600 mb-2">{classItem.description}</p>
-                            <p className="text-sm text-gray-500">Duration: {classItem.duration}</p>
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                              <Clock className="h-4 w-4" />
+                              <span>{classItem.duration}</span>
+                            </div>
                           </div>
-                          <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-1" />
+                          <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-2 group-hover:text-blue-500" />
                         </div>
                       </CardContent>
                     </Card>
