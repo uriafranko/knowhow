@@ -113,7 +113,9 @@ const Class = () => {
               <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
               <ScrollArea className="h-48 rounded-md border p-4 bg-white">
                 {classData.transcription ? (
-                  <p className="text-gray-600">{classData.transcription}</p>
+                  <div className="prose prose-gray max-w-none">
+                    <ReactMarkdown>{classData.transcription.replace(/\\n/g, '\n')}</ReactMarkdown>
+                  </div>
                 ) : (
                   <p className="text-gray-500 italic">No transcription available for this lesson</p>
                 )}
@@ -127,7 +129,7 @@ const Class = () => {
             <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
               <div className="prose prose-gray max-w-none">
                 {classData.research ? (
-                  <ReactMarkdown>{classData.research}</ReactMarkdown>
+                  <ReactMarkdown>{classData.research.replace(/\\n/g, '\n')}</ReactMarkdown>
                 ) : (
                   <p className="text-gray-500 italic">No research content available for this lesson</p>
                 )}
