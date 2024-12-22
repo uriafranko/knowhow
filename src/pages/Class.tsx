@@ -6,6 +6,7 @@ import { Loader2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import AudioLesson from "@/components/class/AudioLesson";
 import ResearchSection from "@/components/class/ResearchSection";
+import { Accordion } from "@/components/ui/accordion";
 
 const Class = () => {
   const { id } = useParams();
@@ -105,13 +106,13 @@ const Class = () => {
 
         {/* Content Section */}
         <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 w-full">
-          <div className="flex flex-col gap-6">
+          <Accordion type="single" defaultValue="audio-lesson" className="flex-1 flex flex-col gap-6">
             <AudioLesson
               audioUrl={classData?.audio_url}
               transcription={classData?.transcription}
             />
             <ResearchSection research={classData?.research} />
-          </div>
+          </Accordion>
         </div>
       </div>
     </PageTransition>
