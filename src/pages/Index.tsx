@@ -1,19 +1,21 @@
-import { motion } from "framer-motion";
-import SearchBar from "@/components/SearchBar";
-import CourseCard from "@/components/CourseCard";
-import PageTransition from "@/components/PageTransition";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { motion } from 'framer-motion';
+import SearchBar from '@/components/SearchBar';
+import CourseCard from '@/components/CourseCard';
+import PageTransition from '@/components/PageTransition';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
-  const { data: courses, isLoading, error } = useQuery({
+  const {
+    data: courses,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('course')
-        .select('*');
-      
+      const { data, error } = await supabase.from('course').select('*');
+
       if (error) throw error;
       return data;
     },
@@ -22,7 +24,7 @@ const Index = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center mb-16">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -58,7 +60,7 @@ const Index = () => {
                   key={course.id}
                   id={course.id.toString()}
                   title={course.topic}
-                  description={course.description || ""}
+                  description={course.description || ''}
                   lessons={0} // We'll implement this count later
                   duration="Coming soon" // We'll implement this calculation later
                   index={index}

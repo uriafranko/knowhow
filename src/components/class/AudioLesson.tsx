@@ -1,10 +1,6 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { parseContent } from "@/utils/contentParser";
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { parseContent } from '@/utils/contentParser';
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 interface AudioLessonProps {
   audioUrl: string | null;
@@ -18,23 +14,19 @@ const AudioLesson = ({ audioUrl, transcription }: AudioLessonProps) => {
         Audio Lesson
       </AccordionTrigger>
       <AccordionContent>
-        <div className="space-y-6">
+        <div className="space-y-3">
           {audioUrl ? (
             <audio controls className="w-full" src={audioUrl}>
               Your browser does not support the audio element.
             </audio>
           ) : (
-            <div className="text-gray-500 italic">
-              No audio available for this lesson
-            </div>
+            <div className="text-gray-500 italic">No audio available for this lesson</div>
           )}
 
           {/* Transcription Section */}
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-3">
-              Transcription
-            </h3>
-            <ScrollArea className="h-48 rounded-md border p-4 bg-white">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
+            <ScrollArea className="h-[24rem] rounded-md border p-4 bg-white">
               {transcription ? (
                 <div
                   className="prose prose-gray max-w-none"
@@ -43,9 +35,7 @@ const AudioLesson = ({ audioUrl, transcription }: AudioLessonProps) => {
                   }}
                 />
               ) : (
-                <p className="text-gray-500 italic">
-                  No transcription available for this lesson
-                </p>
+                <p className="text-gray-500 italic">No transcription available for this lesson</p>
               )}
             </ScrollArea>
           </div>

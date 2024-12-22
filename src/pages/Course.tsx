@@ -1,12 +1,21 @@
-import { useParams, Link } from "react-router-dom";
-import PageTransition from "@/components/PageTransition";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/components/AuthProvider";
+import { useParams, Link } from 'react-router-dom';
+import PageTransition from '@/components/PageTransition';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  ArrowRight,
+  BookOpen,
+  Target,
+  ListChecks,
+  Clock,
+  CheckCircle2,
+  Loader2,
+  ArrowLeft,
+} from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/AuthProvider';
 
 const Course = () => {
   const { id } = useParams();
@@ -17,13 +26,9 @@ const Course = () => {
     queryKey: ['course', id],
     queryFn: async () => {
       if (!id) throw new Error('Course ID is required');
-      
-      const { data, error } = await supabase
-        .from('course')
-        .select('*')
-        .eq('id', id)
-        .maybeSingle();
-      
+
+      const { data, error } = await supabase.from('course').select('*').eq('id', id).maybeSingle();
+
       if (error) throw error;
       return data;
     },
@@ -34,13 +39,13 @@ const Course = () => {
     queryKey: ['classes', id],
     queryFn: async () => {
       if (!id) throw new Error('Course ID is required');
-      
+
       const { data, error } = await supabase
         .from('class')
         .select('*')
         .eq('course_id', id)
         .order('index');
-      
+
       if (error) throw error;
       return data;
     },
@@ -55,9 +60,9 @@ const Course = () => {
         .from('class_completed')
         .select('class_id')
         .eq('user_id', user.id);
-      
+
       if (error) throw error;
-      return data.map(item => item.class_id);
+      return data.map((item) => item.class_id);
     },
     enabled: !!user && !!id, // Only run query if both user and id exist
   });
@@ -69,7 +74,7 @@ const Course = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Invalid Course ID</h1>
             <Link
               to="/"
@@ -98,7 +103,7 @@ const Course = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Course not found</h1>
             <Link
               to="/"
@@ -120,7 +125,7 @@ const Course = () => {
   return (
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link
             to="/"
@@ -132,7 +137,9 @@ const Course = () => {
 
           {/* Header Section */}
           <div className="mb-12 text-center">
-            <Badge variant="secondary" className="mb-6">Course</Badge>
+            <Badge variant="secondary" className="mb-6">
+              Course
+            </Badge>
             <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{course.topic}</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{course.description}</p>
             <div className="flex justify-center gap-4">
@@ -191,12 +198,12 @@ const Course = () => {
                 {classes?.map((classItem) => {
                   const isCompleted = completedClasses.includes(classItem.id);
                   return (
-                    <Link
-                      key={classItem.id}
-                      to={`/class/${classItem.id}`}
-                      className="block group"
-                    >
-                      <Card className={`transition-all duration-300 hover:shadow-xl border-none ${isCompleted ? 'bg-green-50' : 'bg-white'}`}>
+                    <Link key={classItem.id} to={`/class/${classItem.id}`} className="block group">
+                      <Card
+                        className={`transition-all duration-300 hover:shadow-xl border-none ${
+                          isCompleted ? 'bg-green-50' : 'bg-white'
+                        }`}
+                      >
                         <CardContent className="p-6">
                           <div className="flex justify-between items-start">
                             <div className="flex-grow">
@@ -204,7 +211,11 @@ const Course = () => {
                                 {isCompleted && (
                                   <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
                                 )}
-                                <h3 className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${isCompleted ? 'text-green-700' : 'text-gray-900'}`}>
+                                <h3
+                                  className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${
+                                    isCompleted ? 'text-green-700' : 'text-gray-900'
+                                  }`}
+                                >
                                   {classItem.name}
                                 </h3>
                               </div>

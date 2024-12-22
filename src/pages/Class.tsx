@@ -1,12 +1,12 @@
-import { useParams, Link } from "react-router-dom";
-import PageTransition from "@/components/PageTransition";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
-import AudioLesson from "@/components/class/AudioLesson";
-import ResearchSection from "@/components/class/ResearchSection";
-import { Accordion } from "@/components/ui/accordion";
+import { useParams, Link } from 'react-router-dom';
+import PageTransition from '@/components/PageTransition';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
+import { useAuth } from '@/components/AuthProvider';
+import AudioLesson from '@/components/class/AudioLesson';
+import ResearchSection from '@/components/class/ResearchSection';
+import { Accordion } from '@/components/ui/accordion';
 
 const Class = () => {
   const { id } = useParams();
@@ -17,17 +17,19 @@ const Class = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('class')
-        .select(`
+        .select(
+          `
           *,
           course:course (
             id,
             topic,
             description
           )
-        `)
+        `
+        )
         .eq('id', id)
         .maybeSingle();
-      
+
       if (error) throw error;
       console.log('Fetched class data:', data);
       return data;
@@ -44,7 +46,7 @@ const Class = () => {
         .eq('class_id', id)
         .eq('user_id', user.id)
         .maybeSingle();
-      
+
       if (error) throw error;
       return data;
     },
@@ -65,7 +67,7 @@ const Class = () => {
     return (
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold text-gray-900">Class not found</h1>
           </div>
         </div>
@@ -78,21 +80,19 @@ const Class = () => {
       <div className="min-h-screen bg-white flex flex-col">
         {/* Header Section */}
         <div className="bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {/* Back Button */}
             <Link
               to={`/course/${classData?.course?.id}`}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 group transition-colors"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3 group transition-colors"
             >
               <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Back to {classData?.course?.topic}
             </Link>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-gray-900">
-                  {classData?.name}
-                </h1>
+                <h1 className="text-4xl font-bold text-gray-900">{classData?.name}</h1>
                 {completionStatus ? (
                   <CheckCircle2 className="h-8 w-8 text-green-500" />
                 ) : (
@@ -105,12 +105,12 @@ const Class = () => {
         </div>
 
         {/* Content Section */}
-        <div className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 w-full">
-          <Accordion type="single" defaultValue="audio-lesson" className="flex-1 flex flex-col gap-6">
-            <AudioLesson
-              audioUrl={classData?.audio_url}
-              transcription={classData?.transcription}
-            />
+        <div
+          className="
+        flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3 w-full"
+        >
+          <Accordion type="single" defaultValue="audio-lesson" className="gap-3">
+            <AudioLesson audioUrl={classData?.audio_url} transcription={classData?.transcription} />
             <ResearchSection research={classData?.research} />
           </Accordion>
         </div>
