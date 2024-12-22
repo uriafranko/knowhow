@@ -9,12 +9,11 @@ interface CourseCardProps {
   id: string;
   title: string;
   description: string;
-  lessons: number;
   duration: string;
   index: number;
 }
 
-const CourseCard = ({ id, title, description, lessons, duration, index }: CourseCardProps) => {
+const CourseCard = ({ id, title, description, duration, index }: CourseCardProps) => {
   const { user } = useAuth();
 
   const { data: isCompleted } = useQuery({
@@ -34,6 +33,18 @@ const CourseCard = ({ id, title, description, lessons, duration, index }: Course
     enabled: !!user,
   });
 
+  const { data: classCount = 0 } = useQuery({
+    queryKey: ['course-classes-count', id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('class')
+        .select('*', { count: 'exact', head: true })
+        .eq('course_id', id);
+      
+      return count || 0;
+    },
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -45,7 +56,7 @@ const CourseCard = ({ id, title, description, lessons, duration, index }: Course
           <div className="flex flex-col h-full">
             <div className="flex justify-between items-start">
               <div className="text-xs font-medium text-gray-500 mb-2">
-                {lessons} lessons · {duration}
+                {classCount} {classCount === 1 ? 'class' : 'classes'} · {duration}
               </div>
               {isCompleted && (
                 <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
