@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import ReactMarkdown from 'react-markdown';
+import { marked } from 'marked';
 import { useAuth } from "@/components/AuthProvider";
 
 const Class = () => {
@@ -93,7 +93,7 @@ const Class = () => {
 
         {/* Content Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-          {/* Audio Player Section - Always show container */}
+          {/* Audio Player Section */}
           <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
             <h2 className="text-2xl font-semibold text-gray-900">Audio Lesson</h2>
             {classData.audio_url ? (
@@ -108,14 +108,16 @@ const Class = () => {
               <div className="text-gray-500 italic">No audio available for this lesson</div>
             )}
             
-            {/* Always show transcription container */}
+            {/* Transcription Section */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
               <ScrollArea className="h-48 rounded-md border p-4 bg-white">
                 {classData.transcription ? (
-                  <div className="prose prose-gray max-w-none">
-                    <ReactMarkdown>{classData.transcription.replace(/\\n/g, '\n')}</ReactMarkdown>
-                  </div>
+                  <div className="prose prose-gray max-w-none" 
+                       dangerouslySetInnerHTML={{ 
+                         __html: marked(classData.transcription.replace(/\\n/g, '\n')) 
+                       }} 
+                  />
                 ) : (
                   <p className="text-gray-500 italic">No transcription available for this lesson</p>
                 )}
@@ -123,13 +125,17 @@ const Class = () => {
             </div>
           </div>
 
-          {/* Research Section - Always show container */}
+          {/* Research Section */}
           <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
             <h2 className="text-2xl font-semibold text-gray-900">Research</h2>
             <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
               <div className="prose prose-gray max-w-none">
                 {classData.research ? (
-                  <ReactMarkdown>{classData.research.replace(/\\n/g, '\n')}</ReactMarkdown>
+                  <div 
+                    dangerouslySetInnerHTML={{ 
+                      __html: marked(classData.research.replace(/\\n/g, '\n')) 
+                    }} 
+                  />
                 ) : (
                   <p className="text-gray-500 italic">No research content available for this lesson</p>
                 )}
