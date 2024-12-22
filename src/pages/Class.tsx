@@ -27,6 +27,7 @@ const Class = () => {
         .maybeSingle();
       
       if (error) throw error;
+      console.log('Fetched class data:', data); // Debug log
       return data;
     },
   });
@@ -92,10 +93,10 @@ const Class = () => {
 
         {/* Content Section */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
-          {/* Audio Player Section */}
-          {classData.audio_url && (
-            <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Audio Lesson</h2>
+          {/* Audio Player Section - Always show container */}
+          <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Audio Lesson</h2>
+            {classData.audio_url ? (
               <audio 
                 controls 
                 className="w-full"
@@ -103,25 +104,36 @@ const Class = () => {
               >
                 Your browser does not support the audio element.
               </audio>
-              {classData.transcription && (
-                <ScrollArea className="h-48 rounded-md border p-4 bg-white">
+            ) : (
+              <div className="text-gray-500 italic">No audio available for this lesson</div>
+            )}
+            
+            {/* Always show transcription container */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Transcription</h3>
+              <ScrollArea className="h-48 rounded-md border p-4 bg-white">
+                {classData.transcription ? (
                   <p className="text-gray-600">{classData.transcription}</p>
-                </ScrollArea>
-              )}
-            </div>
-          )}
-
-          {/* Research Section */}
-          {classData.research && (
-            <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-900">Research</h2>
-              <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
-                <div className="prose prose-gray max-w-none">
-                  <ReactMarkdown>{classData.research}</ReactMarkdown>
-                </div>
+                ) : (
+                  <p className="text-gray-500 italic">No transcription available for this lesson</p>
+                )}
               </ScrollArea>
             </div>
-          )}
+          </div>
+
+          {/* Research Section - Always show container */}
+          <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
+            <h2 className="text-2xl font-semibold text-gray-900">Research</h2>
+            <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
+              <div className="prose prose-gray max-w-none">
+                {classData.research ? (
+                  <ReactMarkdown>{classData.research}</ReactMarkdown>
+                ) : (
+                  <p className="text-gray-500 italic">No research content available for this lesson</p>
+                )}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </div>
     </PageTransition>
