@@ -62,6 +62,35 @@ export type Database = {
           },
         ]
       }
+      class_completed: {
+        Row: {
+          class_id: number
+          created_at: string
+          id: number
+          user_id: string
+        }
+        Insert: {
+          class_id: number
+          created_at?: string
+          id?: number
+          user_id: string
+        }
+        Update: {
+          class_id?: number
+          created_at?: string
+          id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_completed_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "class"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course: {
         Row: {
           created_at: string
