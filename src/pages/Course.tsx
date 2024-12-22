@@ -1,9 +1,8 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2, Loader2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2, Loader2, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -88,6 +87,15 @@ const Course = () => {
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Back Button */}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 group transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+            Back to Courses
+          </Link>
+
           {/* Header Section */}
           <div className="mb-12 text-center">
             <Badge variant="secondary" className="mb-6">Course</Badge>

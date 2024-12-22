@@ -1,8 +1,8 @@
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import AudioLesson from "@/components/class/AudioLesson";
 import ResearchSection from "@/components/class/ResearchSection";
@@ -19,6 +19,7 @@ const Class = () => {
         .select(`
           *,
           course:course (
+            id,
             topic,
             description
           )
@@ -27,7 +28,7 @@ const Class = () => {
         .maybeSingle();
       
       if (error) throw error;
-      console.log('Fetched class data:', data); // Debug log
+      console.log('Fetched class data:', data);
       return data;
     },
   });
@@ -77,6 +78,15 @@ const Class = () => {
         {/* Header Section */}
         <div className="bg-gradient-to-b from-gray-50 to-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* Back Button */}
+            <Link
+              to={`/course/${classData.course.id}`}
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 group transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+              Back to {classData.course.topic}
+            </Link>
+
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <h1 className="text-4xl font-bold text-gray-900">{classData.name}</h1>
