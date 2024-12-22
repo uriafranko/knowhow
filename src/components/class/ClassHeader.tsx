@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/components/AuthProvider';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface ClassHeaderProps {
@@ -43,7 +43,12 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
           .insert([{ class_id: classId, user_id: user.id }]);
       }
 
-      queryClient.invalidateQueries({ queryKey: ['class-completion', classId, user.id] });
+      // Refetch both class completion and course completion data
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['class-completion', classId, user.id] }),
+        queryClient.invalidateQueries({ queryKey: ['completed-classes', courseId, user.id] }),
+        queryClient.invalidateQueries({ queryKey: ['course-completion', courseId, user.id] })
+      ]);
       
       toast({
         title: isCompleted ? "Class unmarked" : "Class completed!",
