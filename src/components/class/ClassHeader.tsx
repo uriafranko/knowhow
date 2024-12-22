@@ -83,27 +83,29 @@ const ClassHeader = ({ name, description, courseId, courseTopic, isCompleted, cl
             <p className="text-xl text-slate-600">{description}</p>
           </div>
 
-          <Button
-            onClick={handleToggleComplete}
-            variant="outline"
-            className={`magic-hover ${
-              isCompleted 
-                ? 'bg-green-50 text-green-600 hover:bg-green-100 border-green-200' 
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
-            }`}
-          >
-            {isCompleted ? (
-              <>
-                <CheckCircle2 className="mr-2 h-5 w-5 text-green-500" />
-                Completed
-              </>
-            ) : (
-              <>
-                <XCircle className="mr-2 h-5 w-5" />
-                Mark as Complete
-              </>
-            )}
-          </Button>
+          {user && (
+            <Button
+              onClick={handleToggleComplete}
+              variant="outline"
+              className={`magic-hover ${
+                isCompleted 
+                  ? 'bg-green-50 text-green-600 hover:bg-green-100 border-green-200' 
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
+              }`}
+            >
+              {isCompleted ? (
+                <>
+                  <CheckCircle2 className="mr-2 h-5 w-5 text-green-500" />
+                  Completed
+                </>
+              ) : (
+                <>
+                  <XCircle className="mr-2 h-5 w-5" />
+                  Mark as Complete
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </div>
