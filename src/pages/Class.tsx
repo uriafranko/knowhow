@@ -1,12 +1,13 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import AudioLesson from '@/components/class/AudioLesson';
 import ResearchSection from '@/components/class/ResearchSection';
 import { Accordion } from '@/components/ui/accordion';
+import ClassHeader from '@/components/class/ClassHeader';
 
 const Class = () => {
   const { id } = useParams();
@@ -31,7 +32,6 @@ const Class = () => {
         .maybeSingle();
 
       if (error) throw error;
-      console.log('Fetched class data:', data);
       return data;
     },
   });
@@ -56,8 +56,8 @@ const Class = () => {
   if (isClassLoading || isCompletionLoading) {
     return (
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 flex justify-center items-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
         </div>
       </PageTransition>
     );
@@ -66,9 +66,9 @@ const Class = () => {
   if (!classData) {
     return (
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+        <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-bold text-gray-900">Class not found</h1>
+            <h1 className="text-2xl font-bold text-purple-900">Class not found</h1>
           </div>
         </div>
       </PageTransition>
@@ -77,41 +77,23 @@ const Class = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-white flex flex-col">
-        {/* Header Section */}
-        <div className="bg-gradient-to-b from-gray-50 to-white">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            {/* Back Button */}
-            <Link
-              to={`/course/${classData?.course?.id}`}
-              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3 group transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-              Back to {classData?.course?.topic}
-            </Link>
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 flex flex-col">
+        <ClassHeader
+          name={classData.name}
+          description={classData.description}
+          courseId={classData.course.id}
+          courseTopic={classData.course.topic}
+          isCompleted={!!completionStatus}
+        />
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold text-gray-900">{classData?.name}</h1>
-                {completionStatus ? (
-                  <CheckCircle2 className="h-8 w-8 text-green-500" />
-                ) : (
-                  <XCircle className="h-8 w-8 text-gray-300" />
-                )}
-              </div>
-              <p className="text-xl text-gray-600">{classData?.description}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div
-          className="
-        flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-3 space-y-3 w-full"
-        >
-          <Accordion type="single" defaultValue="audio-lesson" className="gap-3">
-            <AudioLesson audioUrl={classData?.audio_url} transcription={classData?.transcription} />
-            <ResearchSection research={classData?.research} />
+        <div className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 w-full max-w-7xl">
+          <Accordion
+            type="single"
+            defaultValue="audio-lesson"
+            className="space-y-6 transition-all duration-300"
+          >
+            <AudioLesson audioUrl={classData.audio_url} transcription={classData.transcription} />
+            <ResearchSection research={classData.research} />
           </Accordion>
         </div>
       </div>
