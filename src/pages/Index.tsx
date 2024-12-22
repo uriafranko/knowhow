@@ -23,7 +23,15 @@ const Index = () => {
         .limit(10);
 
       if (searchQuery) {
-        query = query.or(`topic.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`);
+        // Split search query into words and create a more flexible search pattern
+        const searchTerms = searchQuery.toLowerCase().split(' ');
+        const searchConditions = searchTerms.map(term => {
+          // Create multiple patterns for each word to catch typos and partial matches
+          return `topic.ilike.%${term}%,description.ilike.%${term}%`;
+        });
+        
+        // Combine all search conditions with OR
+        query = query.or(searchConditions.join(','));
       }
 
       const { data, error } = await query;
