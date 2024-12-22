@@ -1,6 +1,7 @@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { parseContent } from '@/utils/contentParser';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Headphones } from 'lucide-react';
 
 interface AudioLessonProps {
   audioUrl: string | null;
@@ -11,7 +12,10 @@ const AudioLesson = ({ audioUrl, transcription }: AudioLessonProps) => {
   return (
     <AccordionItem value="audio-lesson">
       <AccordionTrigger className="text-2xl font-semibold text-gray-900">
-        Audio Lesson
+        <div className="flex items-center gap-2">
+          <Headphones className="h-6 w-6" />
+          Audio Lesson
+        </div>
       </AccordionTrigger>
       <AccordionContent>
         <div className="space-y-3">
