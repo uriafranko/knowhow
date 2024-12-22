@@ -16,13 +16,14 @@ serve(async (req) => {
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { db: { schema: 'pgmq' } }
     );
 
     const { prompt, userId } = await req.json();
 
     // Insert the message into the queue
-    const { data, error } = await supabaseClient.rpc('pgmq_send', {
+    const { data, error } = await supabaseClient.rpc('send', {
       queue_name: 'course_generator_queue',
       message: JSON.stringify({
         prompt,

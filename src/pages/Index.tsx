@@ -21,17 +21,14 @@ const Index = () => {
   } = useQuery({
     queryKey: ['courses', searchQuery],
     queryFn: async () => {
-      let query = supabase
-        .from('course')
-        .select('*')
-        .limit(10);
+      let query = supabase.from('course').select('*').limit(10);
 
       if (searchQuery) {
         const searchTerms = searchQuery.toLowerCase().split(' ');
-        const searchConditions = searchTerms.map(term => {
+        const searchConditions = searchTerms.map((term) => {
           return `topic.ilike.%${term}%,description.ilike.%${term}%`;
         });
-        
+
         query = query.or(searchConditions.join(','));
       }
 
@@ -45,8 +42,8 @@ const Index = () => {
   const handleGenerateClass = async (prompt: string) => {
     setIsGenerateModalOpen(false);
     toast({
-      title: "✨ Magic in Progress",
-      description: "Your class is being crafted with care...",
+      title: '✨ Magic in Progress',
+      description: 'Your class is being crafted with care...',
     });
     // TODO: Implement class generation logic
   };
@@ -108,9 +105,7 @@ const Index = () => {
                     <h3 className="text-xl font-semibold text-purple-800 mb-2 group-hover:text-purple-900">
                       Let me generate a class for you
                     </h3>
-                    <p className="text-purple-600">
-                      Click here to create something magical
-                    </p>
+                    <p className="text-purple-600">Click here to create something magical</p>
                   </div>
                 </motion.div>
               )}
@@ -119,6 +114,7 @@ const Index = () => {
         </div>
       </div>
       <GenerateClassModal
+        searchQuery={searchQuery}
         open={isGenerateModalOpen}
         onOpenChange={setIsGenerateModalOpen}
         onGenerate={handleGenerateClass}

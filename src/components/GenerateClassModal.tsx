@@ -7,13 +7,19 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 
 interface GenerateClassModalProps {
+  searchQuery: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onGenerate: (prompt: string) => void;
 }
 
-const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassModalProps) => {
-  const [prompt, setPrompt] = useState('');
+const GenerateClassModal = ({
+  searchQuery,
+  open,
+  onOpenChange,
+  onGenerate,
+}: GenerateClassModalProps) => {
+  const [prompt, setPrompt] = useState(searchQuery);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
