@@ -2,8 +2,9 @@ import { useParams } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, BookOpen, Target, ListChecks, Clock } from "lucide-react";
+import { ArrowRight, BookOpen, Target, ListChecks, Clock, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 // Mock data - in a real app, this would come from an API
 const courseData = {
@@ -21,19 +22,22 @@ const courseData = {
       id: "1",
       title: "JavaScript Fundamentals Review",
       description: "A quick refresher on core JavaScript concepts and modern syntax.",
-      duration: "45 minutes"
+      duration: "45 minutes",
+      completed: true
     },
     {
       id: "2",
       title: "Advanced Functions and Closures",
       description: "Deep dive into function mechanics and closure patterns.",
-      duration: "60 minutes"
+      duration: "60 minutes",
+      completed: true
     },
     {
       id: "3",
       title: "Asynchronous Programming",
       description: "Understanding Promises, async/await, and event loop.",
-      duration: "90 minutes"
+      duration: "90 minutes",
+      completed: false
     }
   ]
 };
@@ -41,11 +45,14 @@ const courseData = {
 const Course = () => {
   const { id } = useParams();
 
-  // Calculate total duration
+  // Calculate total duration and progress
   const totalDuration = courseData.classes.reduce((total, classItem) => {
     const minutes = parseInt(classItem.duration);
     return total + minutes;
   }, 0);
+
+  const completedClasses = courseData.classes.filter(c => c.completed).length;
+  const progressPercentage = (completedClasses / courseData.classes.length) * 100;
 
   const formatDuration = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -62,10 +69,21 @@ const Course = () => {
             <Badge variant="secondary" className="mb-6">{courseData.topic}</Badge>
             <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{courseData.title}</h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{courseData.description}</p>
-            <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
-              <Clock className="h-4 w-4 text-blue-500" />
-              <span className="text-sm font-medium">Total Duration: {formatDuration(totalDuration)}</span>
+            <div className="flex justify-center gap-4">
+              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
+                <Clock className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-medium">Total Duration: {formatDuration(totalDuration)}</span>
+              </div>
+              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
+                <BookOpen className="h-4 w-4 text-green-500" />
+                <span className="text-sm font-medium">{completedClasses} of {courseData.classes.length} completed</span>
+              </div>
             </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mb-8">
+            <Progress value={progressPercentage} className="h-2" />
           </div>
 
           {/* Course Outcomes */}
@@ -98,19 +116,24 @@ const Course = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {courseData.classes.map((classItem) => (
+                {courseData.classes.map((classItem, index) => (
                   <Link
                     key={classItem.id}
                     to={`/class/${classItem.id}`}
                     className="block group"
                   >
-                    <Card className="transition-all duration-300 hover:shadow-xl border-none bg-white">
+                    <Card className={`transition-all duration-300 hover:shadow-xl border-none ${classItem.completed ? 'bg-green-50' : 'bg-white'}`}>
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
-                              {classItem.title}
-                            </h3>
+                          <div className="flex-grow">
+                            <div className="flex items-center gap-3">
+                              {classItem.completed && (
+                                <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                              )}
+                              <h3 className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${classItem.completed ? 'text-green-700' : 'text-gray-900'}`}>
+                                {classItem.title}
+                              </h3>
+                            </div>
                             <p className="text-gray-600 mb-2">{classItem.description}</p>
                             <div className="flex items-center gap-2 text-sm text-gray-500">
                               <Clock className="h-4 w-4" />
