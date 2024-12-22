@@ -2,12 +2,16 @@ import { useParams } from "react-router-dom";
 import PageTransition from "@/components/PageTransition";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import ReactMarkdown from 'react-markdown';
+import { useAuth } from "@/components/AuthProvider";
 
 const Class = () => {
   const { id } = useParams();
+  const { user } = useAuth();
 
-  const { data: classData, isLoading } = useQuery({
+  const { data: classData, isLoading: isClassLoading } = useQuery({
     queryKey: ['class', id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,7 +31,24 @@ const Class = () => {
     },
   });
 
-  if (isLoading) {
+  const { data: completionStatus, isLoading: isCompletionLoading } = useQuery({
+    queryKey: ['class-completion', id, user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('class_completed')
+        .select('*')
+        .eq('class_id', id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  if (isClassLoading || isCompletionLoading) {
     return (
       <PageTransition>
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 flex justify-center items-center">
@@ -51,17 +72,56 @@ const Class = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <div className="text-sm text-gray-500 mb-2">
-              Course: {classData.course?.topic}
+      <div className="min-h-screen bg-white">
+        {/* Header Section */}
+        <div className="bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <h1 className="text-4xl font-bold text-gray-900">{classData.name}</h1>
+                {completionStatus ? (
+                  <CheckCircle2 className="h-8 w-8 text-green-500" />
+                ) : (
+                  <XCircle className="h-8 w-8 text-gray-300" />
+                )}
+              </div>
+              <p className="text-xl text-gray-600">{classData.description}</p>
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{classData.name}</h1>
-            <p className="text-xl text-gray-600">{classData.description}</p>
           </div>
+        </div>
 
-          {/* We'll implement the full class content UI in the next iteration */}
+        {/* Content Section */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+          {/* Audio Player Section */}
+          {classData.audio_url && (
+            <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Audio Lesson</h2>
+              <audio 
+                controls 
+                className="w-full"
+                src={classData.audio_url}
+              >
+                Your browser does not support the audio element.
+              </audio>
+              {classData.transcription && (
+                <ScrollArea className="h-48 rounded-md border p-4 bg-white">
+                  <p className="text-gray-600">{classData.transcription}</p>
+                </ScrollArea>
+              )}
+            </div>
+          )}
+
+          {/* Research Section */}
+          {classData.research && (
+            <div className="bg-gray-50 rounded-2xl p-8 space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-900">Research</h2>
+              <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
+                <div className="prose prose-gray max-w-none">
+                  <ReactMarkdown>{classData.research}</ReactMarkdown>
+                </div>
+              </ScrollArea>
+            </div>
+          )}
         </div>
       </div>
     </PageTransition>
