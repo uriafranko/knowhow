@@ -1,5 +1,7 @@
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { parseContent } from "@/utils/contentParser";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import rehypeHighlight from 'rehype-highlight';
+
+import Markdown from '../general/Markdown';
 
 interface ResearchSectionProps {
   research: string | null;
@@ -12,12 +14,13 @@ const ResearchSection = ({ research }: ResearchSectionProps) => {
       <ScrollArea className="h-[calc(100vh-600px)] rounded-md border p-8 bg-white">
         <div className="prose prose-gray max-w-none">
           {research ? (
-            <div 
-              dangerouslySetInnerHTML={{ 
-                __html: parseContent(research)
-              }} 
-            />
+            <Markdown rehypePlugins={[rehypeHighlight]}>{research}</Markdown>
           ) : (
+            // <div
+            //   dangerouslySetInnerHTML={{
+            //     __html: parseContent(research)
+            //   }}
+            // />
             <p className="text-gray-500 italic">No research content available for this lesson</p>
           )}
         </div>
