@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Wand2 } from "lucide-react";
+import { Sparkles, Wand2, Lock } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 
 interface GenerateClassModalProps {
   open: boolean;
@@ -11,6 +12,7 @@ interface GenerateClassModalProps {
 
 const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassModalProps) => {
   const [prompt, setPrompt] = useState("");
+  const { user } = useAuth();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -36,14 +38,29 @@ const GenerateClassModal = ({ open, onOpenChange, onGenerate }: GenerateClassMod
               className="min-h-[100px] border-purple-200 focus-visible:ring-purple-400 bg-white/50 placeholder:text-purple-300"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
+              disabled={!user}
             />
           </div>
           <button
             onClick={() => onGenerate(prompt)}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:shadow-purple-300/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transform hover:-translate-y-0.5"
+            disabled={!user}
+            className={`inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 ${
+              user 
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:shadow-purple-300/40 transform hover:-translate-y-0.5" 
+                : "bg-gray-100 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            <Wand2 className="h-4 w-4" />
-            Generate the Magic
+            {user ? (
+              <>
+                <Wand2 className="h-4 w-4" />
+                Generate the Magic
+              </>
+            ) : (
+              <>
+                <Lock className="h-4 w-4" />
+                Please Authenticate
+              </>
+            )}
           </button>
         </div>
       </DialogContent>
