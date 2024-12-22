@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import SearchBar from "@/components/SearchBar";
 import CourseCard from "@/components/CourseCard";
 import PageTransition from "@/components/PageTransition";
