@@ -1,1 +1,4 @@
 project_id = "hnooiopqwzunhqpzlmxb"
+
+[functions.queue-class-generation]
+verify_jwt = true
