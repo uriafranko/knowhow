@@ -56,8 +56,8 @@ const Class = () => {
   if (isClassLoading || isCompletionLoading) {
     return (
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12 flex justify-center items-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 py-12 flex justify-center items-center">
+          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
         </div>
       </PageTransition>
     );
@@ -66,9 +66,9 @@ const Class = () => {
   if (!classData) {
     return (
       <PageTransition>
-        <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 py-12">
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 py-12">
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-bold text-purple-900">Class not found</h1>
+            <h1 className="text-2xl font-bold text-slate-900">Class not found</h1>
           </div>
         </div>
       </PageTransition>
@@ -77,13 +77,14 @@ const Class = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-purple-50 flex flex-col">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex flex-col">
         <ClassHeader
           name={classData.name}
           description={classData.description}
           courseId={classData.course.id}
           courseTopic={classData.course.topic}
           isCompleted={!!completionStatus}
+          classId={Number(id)}
         />
 
         <div className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 w-full max-w-7xl">
