@@ -12,9 +12,12 @@ const Course = () => {
   const { id } = useParams();
   const { user } = useAuth();
 
+  // Only fetch if we have a valid ID
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ['course', id],
     queryFn: async () => {
+      if (!id) throw new Error('Course ID is required');
+      
       const { data, error } = await supabase
         .from('course')
         .select('*')
@@ -24,11 +27,14 @@ const Course = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !!id, // Only run query if id exists
   });
 
   const { data: classes, isLoading: classesLoading } = useQuery({
     queryKey: ['classes', id],
     queryFn: async () => {
+      if (!id) throw new Error('Course ID is required');
+      
       const { data, error } = await supabase
         .from('class')
         .select('*')
@@ -38,12 +44,13 @@ const Course = () => {
       if (error) throw error;
       return data;
     },
+    enabled: !!id, // Only run query if id exists
   });
 
   const { data: completedClasses = [], isLoading: completedClassesLoading } = useQuery({
     queryKey: ['completed-classes', id, user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user || !id) return [];
       const { data, error } = await supabase
         .from('class_completed')
         .select('class_id')
@@ -52,10 +59,30 @@ const Course = () => {
       if (error) throw error;
       return data.map(item => item.class_id);
     },
-    enabled: !!user,
+    enabled: !!user && !!id, // Only run query if both user and id exist
   });
 
   const isLoading = courseLoading || classesLoading || completedClassesLoading;
+
+  // Handle invalid course ID
+  if (!id) {
+    return (
+      <PageTransition>
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-2xl font-bold text-gray-900">Invalid Course ID</h1>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mt-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Return to Courses
+            </Link>
+          </div>
+        </div>
+      </PageTransition>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -73,6 +100,13 @@ const Course = () => {
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-2xl font-bold text-gray-900">Course not found</h1>
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 mt-4"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Return to Courses
+            </Link>
           </div>
         </div>
       </PageTransition>
