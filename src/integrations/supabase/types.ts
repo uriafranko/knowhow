@@ -118,6 +118,35 @@ export type Database = {
         }
         Relationships: []
       }
+      course_completed: {
+        Row: {
+          course_id: number
+          created_at: string
+          id: number
+          user_id: string | null
+        }
+        Insert: {
+          course_id: number
+          created_at?: string
+          id?: number
+          user_id?: string | null
+        }
+        Update: {
+          course_id?: number
+          created_at?: string
+          id?: number
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_completed_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
