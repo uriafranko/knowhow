@@ -1,14 +1,12 @@
-import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { useAuth } from '@/components/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CourseHeaderActions from './CourseHeaderActions';
 import CourseProgress from './CourseProgress';
 
 interface CourseHeaderProps {
   topic: string;
-  description: string;
+  description: string | null;
   totalClasses: number;
   completedClassesCount: number;
   isCompleted: boolean;
@@ -25,71 +23,75 @@ const CourseHeader = ({
   onComplete,
   courseId,
 }: CourseHeaderProps) => {
-  const { user } = useAuth();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: isSaved } = useQuery({
-    queryKey: ['saved-course', courseId, user?.id],
-    queryFn: async () => {
-      if (!user) return false;
-      const { data } = await supabase
-        .from('saved_course')
-        .select('id')
-        .eq('course_id', courseId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-      return !!data;
-    },
-    enabled: !!user,
-  });
-
-  const handleShare = async () => {
-    try {
-      await navigator.share({
-        title: topic,
-        text: description,
-        url: window.location.href,
-      });
-    } catch (error) {
-      // If Web Share API is not supported, fallback to copying URL
-      navigator.clipboard.writeText(window.location.href);
-      toast.success('Course URL copied to clipboard');
-    }
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: 'Link copied!',
+      description: 'The course link has been copied to your clipboard.',
+    });
   };
 
   const handleSave = async () => {
-    if (!user) {
-      toast.error('Please sign in to save courses');
-      return;
-    }
-
     try {
       if (isSaved) {
         await supabase
           .from('saved_course')
           .delete()
-          .eq('course_id', courseId)
-          .eq('user_id', user.id);
-        toast.success('Course removed from library');
+          .eq('course_id', courseId);
+
+        toast({
+          title: 'Course removed',
+          description: 'The course has been removed from your library.',
+        });
       } else {
-        await supabase.from('saved_course').insert([{ course_id: courseId, user_id: user.id }]);
-        toast.success('Course saved to library');
+        await supabase
+          .from('saved_course')
+          .insert([{ course_id: courseId }]);
+
+        toast({
+          title: 'Course saved!',
+          description: 'The course has been added to your library.',
+        });
       }
-      queryClient.invalidateQueries({ queryKey: ['saved-course', courseId, user.id] });
-      queryClient.invalidateQueries({ queryKey: ['saved-courses', user.id] });
+
+      // Invalidate relevant queries to update the UI
+      queryClient.invalidateQueries({ queryKey: ['saved-course', courseId] });
+      queryClient.invalidateQueries({ queryKey: ['course-stats', courseId] });
     } catch (error) {
-      toast.error('Failed to save course');
+      toast({
+        title: 'Error',
+        description: 'There was a problem saving the course.',
+        variant: 'destructive',
+      });
     }
   };
 
+  const { data: isSaved } = useQuery({
+    queryKey: ['saved-course', courseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('saved_course')
+        .select('*')
+        .eq('course_id', courseId)
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
   return (
-    <div className="mb-12 text-center relative">
-      <CourseHeaderActions isSaved={isSaved} onSave={handleSave} onShare={handleShare} />
-      <Badge variant="secondary" className="mb-3">
-        Course
-      </Badge>
-      <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{topic}</h1>
-      <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{description}</p>
+    <div className="mb-8">
+      <CourseHeaderActions
+        isSaved={!!isSaved}
+        onSave={handleSave}
+        onShare={handleShare}
+      />
+      <h1 className="text-4xl font-bold text-gray-900 mb-4">{topic}</h1>
+      {description && (
+        <p className="text-xl text-gray-600 mb-8">{description}</p>
+      )}
       <CourseProgress
         totalClasses={totalClasses}
         completedClassesCount={completedClassesCount}
