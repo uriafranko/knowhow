@@ -103,30 +103,36 @@ export type Database = {
       }
       course: {
         Row: {
+          completed_count: number
           created_at: string
           creator_id: string | null
           description: string | null
           id: number
           is_ready: boolean | null
           outcome: string | null
+          saved_count: number
           topic: string
         }
         Insert: {
+          completed_count?: number
           created_at?: string
           creator_id?: string | null
           description?: string | null
           id?: number
           is_ready?: boolean | null
           outcome?: string | null
+          saved_count?: number
           topic: string
         }
         Update: {
+          completed_count?: number
           created_at?: string
           creator_id?: string | null
           description?: string | null
           id?: number
           is_ready?: boolean | null
           outcome?: string | null
+          saved_count?: number
           topic?: string
         }
         Relationships: []
