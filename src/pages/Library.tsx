@@ -32,7 +32,31 @@ const Library = () => {
     enabled: !!user,
   });
 
-  if (isCompletedLoading) {
+  const { data: savedCourses, isLoading: isSavedLoading } = useQuery({
+    queryKey: ['saved-courses', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('saved_course')
+        .select(`
+          course_id,
+          course:course (
+            id,
+            topic,
+            description
+          )
+        `)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const isLoading = isCompletedLoading || isSavedLoading;
+
+  if (isLoading) {
     return (
       <PageTransition>
         <div className="flex justify-center items-center min-h-[200px]">
@@ -71,9 +95,24 @@ const Library = () => {
               <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
             <TabsContent value="saved">
-              <div className="text-center text-gray-500">
-                Saved courses feature coming soon
-              </div>
+              {savedCourses && savedCourses.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {savedCourses.map((item, index) => (
+                    <CourseCard
+                      key={item.course.id}
+                      id={item.course.id.toString()}
+                      title={item.course.topic}
+                      description={item.course.description || ''}
+                      duration=""
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-500">
+                  No saved courses yet
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="completed">
               {completedCourses && completedCourses.length > 0 ? (
