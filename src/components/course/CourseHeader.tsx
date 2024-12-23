@@ -1,7 +1,10 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Clock, Trophy, Share2 } from 'lucide-react';
+import { BookOpen, Clock, Trophy, Share2, Bookmark, BookmarkCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/components/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface CourseHeaderProps {
   topic: string;
@@ -10,6 +13,7 @@ interface CourseHeaderProps {
   completedClassesCount: number;
   isCompleted: boolean;
   onComplete: () => void;
+  courseId: number;
 }
 
 const CourseHeader = ({
@@ -19,7 +23,25 @@ const CourseHeader = ({
   completedClassesCount,
   isCompleted,
   onComplete,
+  courseId,
 }: CourseHeaderProps) => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: isSaved } = useQuery({
+    queryKey: ['saved-course', courseId, user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from('saved_course')
+        .select('id')
+        .eq('course_id', courseId)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
   const handleShare = async () => {
     try {
       await navigator.share({
@@ -34,13 +56,52 @@ const CourseHeader = ({
     }
   };
 
+  const handleSave = async () => {
+    if (!user) {
+      toast.error('Please sign in to save courses');
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await supabase
+          .from('saved_course')
+          .delete()
+          .eq('course_id', courseId);
+        toast.success('Course removed from library');
+      } else {
+        await supabase
+          .from('saved_course')
+          .insert([{ course_id: courseId }]);
+        toast.success('Course saved to library');
+      }
+      queryClient.invalidateQueries({ queryKey: ['saved-course', courseId, user.id] });
+      queryClient.invalidateQueries({ queryKey: ['saved-courses', user.id] });
+    } catch (error) {
+      toast.error('Failed to save course');
+    }
+  };
+
   return (
     <div className="mb-12 text-center relative">
-      <div className="absolute right-0 top-0">
+      <div className="absolute right-0 top-0 flex gap-2">
         <Button
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="rounded-full"
+          className="rounded-full hover:bg-purple-50 hover:text-purple-600 transition-all duration-300"
+          onClick={handleSave}
+          title={isSaved ? 'Remove from library' : 'Save to library'}
+        >
+          {isSaved ? (
+            <BookmarkCheck className="h-5 w-5 text-purple-600" />
+          ) : (
+            <Bookmark className="h-5 w-5" />
+          )}
+        </Button>
+        <Button
+          variant="default"
+          size="icon"
+          className="rounded-full shadow-lg shadow-purple-100 hover:shadow-purple-200 transition-all duration-300"
           onClick={handleShare}
           title="Share course"
         >

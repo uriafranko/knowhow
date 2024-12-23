@@ -159,6 +159,7 @@ const Course = () => {
             completedClassesCount={completedClassesCount}
             isCompleted={!!courseCompletion}
             onComplete={handleCompleteCourse}
+            courseId={Number(id)}
           />
 
           <div className="mb-8">

@@ -181,6 +181,32 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_course: {
+        Row: {
+          course_id: number
+          created_at: string
+          id: number
+        }
+        Insert: {
+          course_id: number
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          course_id?: number
+          created_at?: string
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_course_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
