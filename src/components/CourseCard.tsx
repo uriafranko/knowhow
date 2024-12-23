@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface CourseCardProps {
   id: string;
@@ -91,14 +97,33 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
             <p className="text-gray-600 mb-4 flex-grow">{description}</p>
             <div className="flex items-center justify-between">
               <div className="flex gap-4">
-                <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <Bookmark className="h-4 w-4" />
-                  <span>{stats.saves}</span>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <Users className="h-4 w-4" />
-                  <span>{stats.completions}</span>
-                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Bookmark className="h-4 w-4" />
+                        <span>{stats.saves}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of times this course has been saved</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Users className="h-4 w-4" />
+                        <span>{stats.completions}</span>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Number of users who completed this course</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
               <div className="flex items-center text-sm font-medium text-purple-600 group-hover:text-purple-700">
                 Learn more
