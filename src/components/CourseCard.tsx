@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Bookmark, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { useQuery } from "@tanstack/react-query";
@@ -45,6 +45,27 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
     },
   });
 
+  const { data: stats = { saves: 0, completions: 0 } } = useQuery({
+    queryKey: ['course-stats', id],
+    queryFn: async () => {
+      const [{ count: saves }, { count: completions }] = await Promise.all([
+        supabase
+          .from('saved_course')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_id', id),
+        supabase
+          .from('course_completed')
+          .select('*', { count: 'exact', head: true })
+          .eq('course_id', id),
+      ]);
+      
+      return {
+        saves: saves || 0,
+        completions: completions || 0,
+      };
+    },
+  });
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -56,8 +77,8 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
         <div className="group relative p-6 rounded-2xl bg-white/80 shadow-sm ring-1 ring-purple-100/20 hover:shadow-xl hover:shadow-purple-100/30 hover:bg-white transition-all duration-500 h-full transform hover:-translate-y-1">
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-50/50 via-white to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
           <div className="relative flex flex-col h-full">
-            <div className="flex justify-between items-start">
-              <div className="text-xs font-medium text-purple-500 mb-2 bg-purple-50 px-3 py-1 rounded-full">
+            <div className="flex justify-between items-start mb-4">
+              <div className="text-xs font-medium text-purple-500 bg-purple-50 px-3 py-1 rounded-full">
                 {classCount} {classCount === 1 ? 'class' : 'classes'} · {duration}
               </div>
               {isCompleted && (
@@ -68,9 +89,21 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
               {title}
             </h3>
             <p className="text-gray-600 mb-4 flex-grow">{description}</p>
-            <div className="flex items-center text-sm font-medium text-purple-600 group-hover:text-purple-700">
-              Learn more
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <div className="flex items-center justify-between">
+              <div className="flex gap-4">
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <Bookmark className="h-4 w-4" />
+                  <span>{stats.saves}</span>
+                </div>
+                <div className="flex items-center gap-1 text-sm text-gray-500">
+                  <Users className="h-4 w-4" />
+                  <span>{stats.completions}</span>
+                </div>
+              </div>
+              <div className="flex items-center text-sm font-medium text-purple-600 group-hover:text-purple-700">
+                Learn more
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </div>
             </div>
           </div>
         </div>
