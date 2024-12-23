@@ -65,11 +65,16 @@ const Library = () => {
             </motion.p>
           </div>
 
-          <Tabs defaultValue="completed" className="w-full">
+          <Tabs defaultValue="saved" className="w-full">
             <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
-              <TabsTrigger value="completed">Completed</TabsTrigger>
               <TabsTrigger value="saved">Saved</TabsTrigger>
+              <TabsTrigger value="completed">Completed</TabsTrigger>
             </TabsList>
+            <TabsContent value="saved">
+              <div className="text-center text-gray-500">
+                Saved courses feature coming soon
+              </div>
+            </TabsContent>
             <TabsContent value="completed">
               {completedCourses && completedCourses.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -89,11 +94,6 @@ const Library = () => {
                   No completed courses yet
                 </div>
               )}
-            </TabsContent>
-            <TabsContent value="saved">
-              <div className="text-center text-gray-500">
-                Saved courses feature coming soon
-              </div>
             </TabsContent>
           </Tabs>
         </div>
