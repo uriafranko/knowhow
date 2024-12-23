@@ -1,25 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  ArrowRight,
-  BookOpen,
-  Target,
-  ListChecks,
-  Clock,
-  CheckCircle2,
-  Loader2,
-  ArrowLeft,
-  Trophy,
-} from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthProvider';
 import { useToast } from '@/hooks/use-toast';
-import Markdown from '@/components/general/Markdown';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import CourseHeader from '@/components/course/CourseHeader';
+import LearningOutcomes from '@/components/course/LearningOutcomes';
+import ClassList from '@/components/course/ClassList';
 
 const Course = () => {
   const { id } = useParams();
@@ -121,7 +110,6 @@ const Course = () => {
   const totalClasses = classes?.length || 0;
   const completedClassesCount = completedClasses.length;
   const progressPercentage = (completedClassesCount / totalClasses) * 100;
-  const allClassesCompleted = totalClasses > 0 && completedClassesCount === totalClasses;
 
   if (isLoading) {
     return (
@@ -164,117 +152,21 @@ const Course = () => {
             Back to Courses
           </Link>
 
-          <div className="mb-12 text-center">
-            <Badge variant="secondary" className="mb-6">
-              Course
-            </Badge>
-            <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">
-              {course?.topic}
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">{course?.description}</p>
-            <div className="flex justify-center gap-4">
-              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
-                <Clock className="h-4 w-4 text-blue-500" />
-                <span className="text-sm font-medium">
-                  {totalClasses} {totalClasses === 1 ? 'class' : 'classes'}
-                </span>
-              </div>
-              <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border">
-                <BookOpen className="h-4 w-4 text-green-500" />
-                <span className="text-sm font-medium">
-                  {completedClassesCount} of {totalClasses} completed
-                </span>
-              </div>
-              {allClassesCompleted && !courseCompletion && (
-                <Button
-                  onClick={handleCompleteCourse}
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/20 transition-all duration-300"
-                >
-                  <Trophy className="h-4 w-4" />
-                  Complete Course
-                </Button>
-              )}
-              {courseCompletion && (
-                <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full shadow-sm border border-green-200">
-                  <Trophy className="h-4 w-4" />
-                  <span className="text-sm font-medium">Course Completed</span>
-                </div>
-              )}
-            </div>
-          </div>
+          <CourseHeader
+            topic={course.topic}
+            description={course.description}
+            totalClasses={totalClasses}
+            completedClassesCount={completedClassesCount}
+            isCompleted={!!courseCompletion}
+            onComplete={handleCompleteCourse}
+          />
 
           <div className="mb-8">
             <Progress value={progressPercentage} className="h-2" />
           </div>
 
-          {course.outcome && (
-            <Card className="mb-8 border-none shadow-lg bg-white/50 backdrop-blur">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-2xl">
-                  <Target className="h-6 w-6 text-blue-500" />
-                  Learning Outcomes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 group">
-                    <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                    <Markdown className="text-gray-700 bg-white">{course.outcome}</Markdown>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Card className="border-none shadow-lg bg-white/50 backdrop-blur">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <BookOpen className="h-6 w-6 text-blue-500" />
-                Course Classes
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {classes?.map((classItem) => {
-                  const isCompleted = completedClasses.includes(classItem.id);
-                  return (
-                    <Link key={classItem.id} to={`/class/${classItem.id}`} className="block group">
-                      <Card
-                        className={`transition-all duration-300 hover:shadow-xl border-none ${
-                          isCompleted ? 'bg-green-50' : 'bg-white'
-                        }`}
-                      >
-                        <CardContent className="p-6">
-                          <div className="flex justify-between items-start">
-                            <div className="flex-grow">
-                              <div className="flex items-center gap-3">
-                                {isCompleted && (
-                                  <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
-                                )}
-                                <h3
-                                  className={`text-lg font-semibold mb-2 group-hover:text-blue-600 transition-colors ${
-                                    isCompleted ? 'text-green-700' : 'text-gray-900'
-                                  }`}
-                                >
-                                  {classItem.name}
-                                </h3>
-                              </div>
-                              <p className="text-gray-600 mb-2">{classItem.description}</p>
-                              <div className="flex items-center gap-2 text-sm text-gray-500">
-                                <Clock className="h-4 w-4" />
-                                <span>{classItem.duration}</span>
-                              </div>
-                            </div>
-                            <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-2 group-hover:text-blue-500" />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
+          <LearningOutcomes outcome={course.outcome} />
+          <ClassList classes={classes || []} completedClasses={completedClasses} />
         </div>
       </div>
     </PageTransition>
