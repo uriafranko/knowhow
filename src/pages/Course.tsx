@@ -142,16 +142,8 @@ const Course = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-6">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 group transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-            Back to Courses
-          </Link>
-
           <CourseHeader
             topic={course.topic}
             description={course.description}

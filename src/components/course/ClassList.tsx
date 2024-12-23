@@ -36,7 +36,7 @@ const ClassList = ({ classes, completedClasses }: ClassListProps) => {
                 >
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start">
-                      <div className="flex-grow">
+                      <div className="flex-grow max-w-[calc(100%-2rem)]">
                         <div className="flex items-center gap-3">
                           {isCompleted && (
                             <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
@@ -50,10 +50,12 @@ const ClassList = ({ classes, completedClasses }: ClassListProps) => {
                           </h3>
                         </div>
                         <p className="text-gray-600 mb-2">{classItem.description}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-500">
-                          <Clock className="h-4 w-4" />
-                          <span>{classItem.duration}</span>
-                        </div>
+                        {classItem.duration && (
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Clock className="h-4 w-4" />
+                            <span>{classItem.duration}</span>
+                          </div>
+                        )}
                       </div>
                       <ArrowRight className="h-5 w-5 text-gray-400 transition-transform group-hover:translate-x-2 group-hover:text-blue-500" />
                     </div>

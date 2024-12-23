@@ -72,9 +72,7 @@ const CourseHeader = ({
           .eq('user_id', user.id);
         toast.success('Course removed from library');
       } else {
-        await supabase
-          .from('saved_course')
-          .insert([{ course_id: courseId, user_id: user.id }]);
+        await supabase.from('saved_course').insert([{ course_id: courseId, user_id: user.id }]);
         toast.success('Course saved to library');
       }
       queryClient.invalidateQueries({ queryKey: ['saved-course', courseId, user.id] });
@@ -87,7 +85,7 @@ const CourseHeader = ({
   return (
     <div className="mb-12 text-center relative">
       <CourseHeaderActions isSaved={isSaved} onSave={handleSave} onShare={handleShare} />
-      <Badge variant="secondary" className="mb-6">
+      <Badge variant="secondary" className="mb-3">
         Course
       </Badge>
       <h1 className="text-5xl font-bold text-gray-900 mb-6 tracking-tight">{topic}</h1>

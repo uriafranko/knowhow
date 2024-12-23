@@ -18,12 +18,7 @@ const LearningOutcomes = ({ outcome }: LearningOutcomesProps) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 group">
-            <ListChecks className="h-5 w-5 text-green-500 mt-1 flex-shrink-0 group-hover:scale-110 transition-transform" />
-            <Markdown className="text-gray-700 bg-white">{outcome}</Markdown>
-          </div>
-        </div>
+        <Markdown className="text-gray-700 bg-white">{outcome}</Markdown>
       </CardContent>
     </Card>
   );
