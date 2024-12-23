@@ -36,6 +36,7 @@ const CourseHeader = ({
         .from('saved_course')
         .select('id')
         .eq('course_id', courseId)
+        .eq('user_id', user.id)
         .maybeSingle();
       return !!data;
     },
@@ -67,12 +68,13 @@ const CourseHeader = ({
         await supabase
           .from('saved_course')
           .delete()
-          .eq('course_id', courseId);
+          .eq('course_id', courseId)
+          .eq('user_id', user.id);
         toast.success('Course removed from library');
       } else {
         await supabase
           .from('saved_course')
-          .insert([{ course_id: courseId }]);
+          .insert([{ course_id: courseId, user_id: user.id }]);
         toast.success('Course saved to library');
       }
       queryClient.invalidateQueries({ queryKey: ['saved-course', courseId, user.id] });
