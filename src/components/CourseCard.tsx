@@ -51,24 +51,16 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
     },
   });
 
-  const { data: stats = { saves: 0, completions: 0 } } = useQuery({
-    queryKey: ['course-stats', id],
+  const { data: course } = useQuery({
+    queryKey: ['course', id],
     queryFn: async () => {
-      const [{ count: saves }, { count: completions }] = await Promise.all([
-        supabase
-          .from('saved_course')
-          .select('*', { count: 'exact', head: true })
-          .eq('course_id', id),
-        supabase
-          .from('course_completed')
-          .select('*', { count: 'exact', head: true })
-          .eq('course_id', id),
-      ]);
+      const { data } = await supabase
+        .from('course')
+        .select('*')
+        .eq('id', id)
+        .single();
       
-      return {
-        saves: saves || 0,
-        completions: completions || 0,
-      };
+      return data;
     },
   });
 
@@ -102,7 +94,7 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 text-sm text-gray-500">
                         <Bookmark className="h-4 w-4" />
-                        <span>{stats.saves}</span>
+                        <span>{course?.saved_count || 0}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -116,7 +108,7 @@ const CourseCard = ({ id, title, description, duration, index }: CourseCardProps
                     <TooltipTrigger asChild>
                       <div className="flex items-center gap-1 text-sm text-gray-500">
                         <Users className="h-4 w-4" />
-                        <span>{stats.completions}</span>
+                        <span>{course?.completed_count || 0}</span>
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
