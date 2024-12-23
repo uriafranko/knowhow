@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Course from "./pages/Course";
 import Class from "./pages/Class";
 import Auth from "./pages/Auth";
+import Library from "./pages/Library";
 
 const queryClient = new QueryClient();
 
@@ -21,10 +22,11 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <TopBar />
-          <div className="pt-16"> {/* Add padding to account for fixed TopBar */}
+          <div className="pt-16">
             <AnimatePresence mode="wait">
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/library" element={<Library />} />
                 <Route path="/course/:id" element={<Course />} />
                 <Route path="/class/:id" element={<Class />} />
                 <Route path="/auth" element={<Auth />} />

@@ -65,18 +65,21 @@ export type Database = {
       class_completed: {
         Row: {
           class_id: number
+          course_id: number
           created_at: string
           id: number
           user_id: string
         }
         Insert: {
           class_id: number
+          course_id: number
           created_at?: string
           id?: number
           user_id: string
         }
         Update: {
           class_id?: number
+          course_id?: number
           created_at?: string
           id?: number
           user_id?: string
@@ -89,6 +92,13 @@ export type Database = {
             referencedRelation: "class"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "class_completed_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "course"
+            referencedColumns: ["id"]
+          },
         ]
       }
       course: {
@@ -97,6 +107,7 @@ export type Database = {
           creator_id: string | null
           description: string | null
           id: number
+          is_ready: boolean | null
           outcome: string | null
           topic: string
         }
@@ -105,6 +116,7 @@ export type Database = {
           creator_id?: string | null
           description?: string | null
           id?: number
+          is_ready?: boolean | null
           outcome?: string | null
           topic: string
         }
@@ -113,6 +125,7 @@ export type Database = {
           creator_id?: string | null
           description?: string | null
           id?: number
+          is_ready?: boolean | null
           outcome?: string | null
           topic?: string
         }
