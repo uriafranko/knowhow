@@ -20,7 +20,11 @@ const Course = () => {
     queryKey: ['course', id],
     queryFn: async () => {
       if (!id) throw new Error('Course ID is required');
-      const { data, error } = await supabase.from('course').select('*').eq('id', id).maybeSingle();
+      const { data, error } = await supabase
+        .from('course')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -86,11 +90,16 @@ const Course = () => {
     try {
       const { error } = await supabase
         .from('course_completed')
-        .insert([{ course_id: Number(id), user_id: user.id }]);
+        .insert([{ 
+          course_id: Number(id), 
+          user_id: user.id 
+        }]);
 
       if (error) throw error;
 
+      // Invalidate both the completion status and the course data to refresh counts
       queryClient.invalidateQueries({ queryKey: ['course-completion', id, user.id] });
+      queryClient.invalidateQueries({ queryKey: ['course', id] });
 
       toast({
         title: 'Course completed! 🎉',
@@ -98,6 +107,7 @@ const Course = () => {
         className: 'bg-gradient-to-r from-slate-50 to-slate-100 border-slate-200',
       });
     } catch (error) {
+      console.error('Error completing course:', error);
       toast({
         title: 'Error',
         description: 'There was a problem marking the course as complete',

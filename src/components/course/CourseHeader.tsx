@@ -6,6 +6,7 @@ import CourseHeaderActions from "./CourseHeaderActions";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/components/AuthProvider";
 
 interface CourseHeaderProps {
   topic: string;
@@ -28,17 +29,21 @@ const CourseHeader = ({
 }: CourseHeaderProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data: isSaved } = useQuery({
-    queryKey: ['saved-course', courseId],
+    queryKey: ['saved-course', courseId, user?.id],
     queryFn: async () => {
+      if (!user) return false;
       const { data } = await supabase
         .from('saved_course')
         .select('*')
         .eq('course_id', courseId)
+        .eq('user_id', user.id)
         .maybeSingle();
       return !!data;
     },
+    enabled: !!user,
   });
 
   const handleShare = () => {
@@ -50,12 +55,22 @@ const CourseHeader = ({
   };
 
   const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please sign in to save courses.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       if (isSaved) {
         await supabase
           .from('saved_course')
           .delete()
-          .eq('course_id', courseId);
+          .eq('course_id', courseId)
+          .eq('user_id', user.id);
 
         toast({
           title: 'Course removed',
@@ -64,7 +79,10 @@ const CourseHeader = ({
       } else {
         await supabase
           .from('saved_course')
-          .insert([{ course_id: courseId }]);
+          .insert([{ 
+            course_id: courseId,
+            user_id: user.id 
+          }]);
 
         toast({
           title: 'Course saved!',
@@ -72,9 +90,11 @@ const CourseHeader = ({
         });
       }
 
-      queryClient.invalidateQueries({ queryKey: ['saved-course', courseId] });
+      // Invalidate both the saved status and the course data to refresh counts
+      queryClient.invalidateQueries({ queryKey: ['saved-course', courseId, user.id] });
       queryClient.invalidateQueries({ queryKey: ['course', courseId] });
     } catch (error) {
+      console.error('Error saving course:', error);
       toast({
         title: 'Error',
         description: 'There was a problem saving the course.',
