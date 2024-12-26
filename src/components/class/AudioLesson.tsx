@@ -33,7 +33,7 @@ const AudioLesson = ({ audioUrl, presentation }: AudioLessonProps) => {
         )}
 
         <div className="rounded-lg border border-slate-200 p-6 bg-white/80">
-          <div className="prose prose-slate max-w-none">
+          <div className="min-h-[400px]">
             {presentation ? (
               <Markdown>{presentation}</Markdown>
             ) : (

@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import ReactMarkdown from 'react-markdown';
+import { Deck, Slide } from 'mdx-deck';
+import { MDXProvider } from '@mdx-js/react';
 import remarkGfm from 'remark-gfm';
-import 'github-markdown-css/github-markdown.css';
+import ReactMarkdown from 'react-markdown';
 
 interface MarkdownProps {
   children: string;
@@ -10,16 +11,41 @@ interface MarkdownProps {
 }
 
 const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins = [] }) => {
-  // Replace escaped newlines with actual newlines
-  const processedContent = children.replace(/\\n/g, '\n');
+  // Check if content contains slide separators (---)
+  const hasSlides = children.includes('---');
 
+  if (hasSlides) {
+    const slides = children.split('---').map(slide => slide.trim());
+    
+    return (
+      <div className={`markdown-deck ${className}`}>
+        <Deck>
+          {slides.map((slideContent, index) => (
+            <Slide key={index}>
+              <div className="p-8">
+                <ReactMarkdown
+                  className="prose prose-slate max-w-none"
+                  rehypePlugins={rehypePlugins}
+                  remarkPlugins={[remarkGfm]}
+                >
+                  {slideContent}
+                </ReactMarkdown>
+              </div>
+            </Slide>
+          ))}
+        </Deck>
+      </div>
+    );
+  }
+
+  // If no slides, render as regular markdown
   return (
     <ReactMarkdown
-      className={`markdown-body ${className} text-gray-700`}
+      className={`markdown-body ${className} prose prose-slate max-w-none`}
       rehypePlugins={rehypePlugins}
       remarkPlugins={[remarkGfm]}
     >
-      {processedContent}
+      {children}
     </ReactMarkdown>
   );
 };
