@@ -1,14 +1,14 @@
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { parseContent } from '@/utils/contentParser';
 import { Card } from '@/components/ui/card';
 import { Headphones } from 'lucide-react';
+import Markdown from '../general/Markdown';
 
 interface AudioLessonProps {
   audioUrl: string | null;
-  transcription: string | null;
+  presentation: string | null;
 }
 
-const AudioLesson = ({ audioUrl, transcription }: AudioLessonProps) => {
+const AudioLesson = ({ audioUrl, presentation }: AudioLessonProps) => {
   return (
     <Card className="p-6 space-y-6 border border-slate-200 rounded-lg overflow-hidden bg-white/50 backdrop-blur-sm shadow-lg shadow-slate-100/20">
       <div className="flex items-center gap-3">
@@ -33,22 +33,16 @@ const AudioLesson = ({ audioUrl, transcription }: AudioLessonProps) => {
           </div>
         )}
 
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-slate-900">Transcription</h3>
-          <ScrollArea className="h-[24rem] rounded-lg border border-slate-200 p-6 bg-white/80">
-            {transcription ? (
-              <div
-                className="prose max-w-none prose-headings:text-slate-900 prose-p:text-slate-700"
-                dangerouslySetInnerHTML={{
-                  __html: parseContent(transcription),
-                }}
-              />
+        <div className="rounded-lg border border-slate-200 p-6 bg-white/80">
+          <div className="prose max-w-none prose-headings:text-slate-900 prose-p:text-slate-700">
+            {presentation ? (
+              <Markdown>{presentation}</Markdown>
             ) : (
               <p className="text-slate-500/70 italic text-center">
-                No transcription available for this lesson
+                No presentation content available for this lesson
               </p>
             )}
-          </ScrollArea>
+          </div>
         </div>
       </div>
     </Card>

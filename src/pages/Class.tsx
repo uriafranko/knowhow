@@ -7,7 +7,6 @@ import { useAuth } from '@/components/AuthProvider';
 import AudioLesson from '@/components/class/AudioLesson';
 import ResearchSection from '@/components/class/ResearchSection';
 import ClassHeader from '@/components/class/ClassHeader';
-import PresentationSection from '@/components/class/PresentationSection';
 
 const Class = () => {
   const { id } = useParams();
@@ -88,8 +87,7 @@ const Class = () => {
         />
 
         <div className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 w-full max-w-7xl">
-          <AudioLesson audioUrl={classData.audio_url} transcription={classData.transcription} />
-          <PresentationSection presentation={classData.presentation} />
+          <AudioLesson audioUrl={classData.audio_url} presentation={classData.presentation} />
           <ResearchSection research={classData.research} />
         </div>
       </div>
