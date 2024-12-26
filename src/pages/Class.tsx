@@ -6,8 +6,8 @@ import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/components/AuthProvider';
 import AudioLesson from '@/components/class/AudioLesson';
 import ResearchSection from '@/components/class/ResearchSection';
-import { Accordion } from '@/components/ui/accordion';
 import ClassHeader from '@/components/class/ClassHeader';
+import PresentationSection from '@/components/class/PresentationSection';
 
 const Class = () => {
   const { id } = useParams();
@@ -88,14 +88,9 @@ const Class = () => {
         />
 
         <div className="flex-1 mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 w-full max-w-7xl">
-          <Accordion
-            type="single"
-            defaultValue="audio-lesson"
-            className="space-y-6 transition-all duration-300"
-          >
-            <AudioLesson audioUrl={classData.audio_url} transcription={classData.transcription} />
-            <ResearchSection research={classData.research} />
-          </Accordion>
+          <AudioLesson audioUrl={classData.audio_url} transcription={classData.transcription} />
+          <PresentationSection presentation={classData.presentation} />
+          <ResearchSection research={classData.research} />
         </div>
       </div>
     </PageTransition>
