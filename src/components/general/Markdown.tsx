@@ -18,23 +18,25 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
     const slides = children.split('---').map(slide => slide.trim());
     
     return (
-      <div className={`markdown-deck ${className}`}>
-        <Deck>
-          {slides.map((slideContent, index) => (
-            <Slide key={index}>
-              <div className="p-8">
-                <ReactMarkdown
-                  className="prose prose-slate max-w-none"
-                  rehypePlugins={rehypePlugins}
-                  remarkPlugins={[remarkGfm]}
-                >
-                  {slideContent}
-                </ReactMarkdown>
-              </div>
-            </Slide>
-          ))}
-        </Deck>
-      </div>
+      <MDXProvider>
+        <div className={`markdown-deck ${className}`}>
+          <Deck>
+            {slides.map((slideContent, index) => (
+              <Slide key={index}>
+                <div className="p-8">
+                  <ReactMarkdown
+                    className="prose prose-slate max-w-none"
+                    rehypePlugins={rehypePlugins}
+                    remarkPlugins={[remarkGfm]}
+                  >
+                    {slideContent}
+                  </ReactMarkdown>
+                </div>
+              </Slide>
+            ))}
+          </Deck>
+        </div>
+      </MDXProvider>
     );
   }
 
