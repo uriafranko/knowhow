@@ -33,15 +33,13 @@ const AudioLesson = ({ audioUrl, presentation }: AudioLessonProps) => {
         )}
 
         <div className="rounded-lg border border-slate-200 p-6 bg-white/80">
-          <div className="prose prose-slate max-w-none">
-            {presentation ? (
-              <Markdown>{presentation}</Markdown>
-            ) : (
-              <p className="text-slate-500/70 italic text-center">
-                No presentation content available for this lesson
-              </p>
-            )}
-          </div>
+          {presentation ? (
+            <Markdown>{presentation}</Markdown>
+          ) : (
+            <p className="text-slate-500/70 italic text-center">
+              No presentation content available for this lesson
+            </p>
+          )}
         </div>
       </div>
     </Card>
