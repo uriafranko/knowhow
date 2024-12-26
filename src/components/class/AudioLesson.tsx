@@ -1,4 +1,3 @@
-import { parseContent } from '@/utils/contentParser';
 import { Card } from '@/components/ui/card';
 import { Headphones } from 'lucide-react';
 import Markdown from '../general/Markdown';
@@ -34,7 +33,7 @@ const AudioLesson = ({ audioUrl, presentation }: AudioLessonProps) => {
         )}
 
         <div className="rounded-lg border border-slate-200 p-6 bg-white/80">
-          <div className="prose max-w-none prose-headings:text-slate-900 prose-p:text-slate-700">
+          <div className="prose prose-slate max-w-none">
             {presentation ? (
               <Markdown>{presentation}</Markdown>
             ) : (
