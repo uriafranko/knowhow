@@ -36,13 +36,21 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
     }
   };
 
-  // If there's only one page, render normally
+  // If there's only one page, render normally without the presentation deck UI
   if (pages.length === 1) {
     return (
       <ReactMarkdown
         className={`markdown-body ${className} text-gray-700`}
-        rehypePlugins={rehypePlugins}
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={rehypePlugins}
+        transformImageUri={uri => {
+          // Handle relative URLs properly
+          if (uri.startsWith('http://') || uri.startsWith('https://')) {
+            return uri;
+          }
+          // Remove any trailing colons that might cause issues
+          return uri.replace(/:$/, '');
+        }}
       >
         {processedContent}
       </ReactMarkdown>
@@ -102,6 +110,14 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
               <ReactMarkdown
                 rehypePlugins={rehypePlugins}
                 remarkPlugins={[remarkGfm]}
+                transformImageUri={uri => {
+                  // Handle relative URLs properly
+                  if (uri.startsWith('http://') || uri.startsWith('https://')) {
+                    return uri;
+                  }
+                  // Remove any trailing colons that might cause issues
+                  return uri.replace(/:$/, '');
+                }}
               >
                 {pages[currentPage]}
               </ReactMarkdown>
