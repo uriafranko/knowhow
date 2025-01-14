@@ -8,6 +8,7 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import GenerateClassModal from '@/components/GenerateClassModal';
 import { useToast } from '@/components/ui/use-toast';
+import CourseStats from '@/components/CourseStats';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,6 +70,7 @@ const Index = () => {
             >
               Explore our curated collection of courses designed to help you grow
             </motion.p>
+            <CourseStats />
             <SearchBar onSearch={setSearchQuery} />
           </div>
 

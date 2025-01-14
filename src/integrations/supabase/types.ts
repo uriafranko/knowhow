@@ -21,6 +21,7 @@ export type Database = {
           name: string
           outcome: string | null
           presentation: string | null
+          questions: string[] | null
           research: string | null
           resources: string[] | null
           transcription: string | null
@@ -36,6 +37,7 @@ export type Database = {
           name: string
           outcome?: string | null
           presentation?: string | null
+          questions?: string[] | null
           research?: string | null
           resources?: string[] | null
           transcription?: string | null
@@ -51,6 +53,7 @@ export type Database = {
           name?: string
           outcome?: string | null
           presentation?: string | null
+          questions?: string[] | null
           research?: string | null
           resources?: string[] | null
           transcription?: string | null
