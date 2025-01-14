@@ -36,6 +36,15 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
     }
   };
 
+  // URL transform function to handle relative URLs properly
+  const urlTransform = (url: string) => {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Remove any trailing colons that might cause issues
+    return url.replace(/:$/, '');
+  };
+
   // If there's only one page, render normally without the presentation deck UI
   if (pages.length === 1) {
     return (
@@ -43,14 +52,7 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
         className={`markdown-body ${className} text-gray-700`}
         remarkPlugins={[remarkGfm]}
         rehypePlugins={rehypePlugins}
-        transformImageUri={uri => {
-          // Handle relative URLs properly
-          if (uri.startsWith('http://') || uri.startsWith('https://')) {
-            return uri;
-          }
-          // Remove any trailing colons that might cause issues
-          return uri.replace(/:$/, '');
-        }}
+        urlTransform={urlTransform}
       >
         {processedContent}
       </ReactMarkdown>
@@ -110,14 +112,7 @@ const Markdown: FC<MarkdownProps> = ({ children, className = '', rehypePlugins =
               <ReactMarkdown
                 rehypePlugins={rehypePlugins}
                 remarkPlugins={[remarkGfm]}
-                transformImageUri={uri => {
-                  // Handle relative URLs properly
-                  if (uri.startsWith('http://') || uri.startsWith('https://')) {
-                    return uri;
-                  }
-                  // Remove any trailing colons that might cause issues
-                  return uri.replace(/:$/, '');
-                }}
+                urlTransform={urlTransform}
               >
                 {pages[currentPage]}
               </ReactMarkdown>
